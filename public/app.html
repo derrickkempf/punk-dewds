@@ -948,10 +948,12 @@ textarea.input { resize: vertical; min-height: 60px; }
 <!-- ABOUT MODAL -->
 <div id="about-backdrop" onclick="if(event.target===this)closeAbout()">
   <div class="about-box">
-    <h2>Punk Dewds</h2>
-    <p><strong>10,000 hand-drawn crypto punks.</strong> Every original CryptoPunk, redrawn by hand — one at a time. This is a long-term art project tracking progress from punk #0000 to punk #9999.</p>
+    <div style="margin-bottom:var(--space-lg)">
+      <dotlottie-wc src="/punk-dewds-logo.lottie" style="width:154px;height:35px" autoplay loop></dotlottie-wc>
+    </div>
+    <p><strong>10,000 hand-drawn crypto punks.</strong> Every original CryptoPunk, redrawn by hand, one at a time. This is a long-term art project tracking progress from punk #0000 to punk #9999.</p>
     <p>Click any punk to see the original reference and the hand-drawn version (if complete). Vote for your favorites and leave comments. Completed drawings are available to purchase.</p>
-    <p>Built with no frameworks, no dependencies, one HTML file. Data lives in your browser's local storage — export anytime.</p>
+    <p>Taking my time to make every single one of 'em.</p>
     <button class="btn-primary" onclick="closeAbout()">Close</button>
   </div>
 </div>
