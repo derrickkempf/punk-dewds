@@ -1009,7 +1009,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 // ═══════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════
-const HASH  = '84dda36ac15613bf1e268360ff8ad7a7d894f231954371aa1bf913b8d9930fa0';
+const HASH  = '1b8b39e2e32eb3491dd00a85126073fff218f7d75b8f12d9b922757bc8595ca5';
 const IMG   = id => `https://cryptopunks.app/images/cryptopunks/punk${String(id).padStart(4,'0')}.png`;
 const TOTAL = 10000;
 const PER   = 200;
@@ -1418,7 +1418,8 @@ function renderMBody(id) {
       <label>IPFS Link</label>
       <input class="input" type="text" id="mip" value="${esc(p.ipfs)}" placeholder="ipfs://...">
     </div>
-    <button class="btn-primary" onclick="msave(${id})">Save changes</button>` : '';
+    <button class="btn-primary" onclick="msave(${id})">Save changes</button>
+    ${p.art ? `<button class="btn-secondary" onclick="mdelArt(${id})" style="margin-top:4px;width:100%;padding:8px">Remove drawing</button>` : ''}` : '';
 
   const ipfsRow = p.ipfs
     ? `<a class="ipfs-link" href="${esc(p.ipfs)}" target="_blank" rel="noopener">${esc(p.ipfs.slice(0,55))}…</a>`
@@ -1594,6 +1595,15 @@ function msave(id) {
   if (ip) punks[id].ipfs = ip;
   save(); doStats(); doFilter(); closeM();
   toast('Saved punk #' + id, true);
+}
+function mdelArt(id) {
+  if (!confirm(`Remove drawing for punk #${String(id).padStart(4,'0')}?`)) return;
+  punks[id].art = null;
+  punks[id].optimizedSvg = null;
+  punks[id].mintStatus = 'none';
+  punks[id].tokenId = null;
+  save(); doStats(); doFilter(); openM(id);
+  toast('Drawing removed for #' + id, true);
 }
 
 // ═══════════════════════════════════════════════════════

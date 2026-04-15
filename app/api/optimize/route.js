@@ -16,15 +16,14 @@ export async function POST(req) {
           name: 'preset-default',
           params: {
             overrides: {
-              removeViewBox: false,
               cleanupIds: false,
+              inlineStyles: false,
             },
           },
         },
-        'removeDimensions',
         {
           name: 'removeAttrs',
-          params: { attrs: ['data-name', 'class'] },
+          params: { attrs: ['data-name'] },
         },
       ],
     })
