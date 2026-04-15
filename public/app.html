@@ -325,6 +325,16 @@ nav {
 .pg:disabled { opacity: .3; pointer-events: none; }
 .ps { color: var(--color-muted); font-size: var(--font-size-sm); padding: 0 2px; }
 
+/* footer */
+.site-footer {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  font-size: var(--font-size-xs); color: var(--color-muted);
+}
+.site-footer a { color: var(--color-muted); transition: color .12s; }
+.site-footer a:hover { color: var(--color-fg); }
+.footer-sep { opacity: .3; }
+
 /* ═══════════════════════════════════════════════════════
    MODAL — flat, no shadow, no border-radius
    ═══════════════════════════════════════════════════════ */
@@ -943,6 +953,16 @@ textarea.input { resize: vertical; min-height: 60px; }
   <div class="empty" id="empty" style="display:none">No punks match that filter.</div>
 </div>
 <div class="pag" id="pag"></div>
+
+<footer class="site-footer">
+  <span>© Derrick Kempf (DEWD)</span>
+  <span class="footer-sep">|</span>
+  <a href="https://x.com/derrickkempf" target="_blank" rel="noopener">X</a>
+  <span class="footer-sep">|</span>
+  <a href="https://instagram.com/derrickkempf" target="_blank" rel="noopener">IG</a>
+  <span class="footer-sep">|</span>
+  <a href="https://dewd.cool" target="_blank" rel="noopener">dewd.cool</a>
+</footer>
 
 <!-- MODAL -->
 <div class="backdrop" id="modal-backdrop" onclick="bgClick(event)">
