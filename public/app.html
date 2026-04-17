@@ -67,7 +67,7 @@
   --space-xl: 40px;
   --space-2xl: 64px;
 
-  --nav-height: 48px;
+  --nav-height: 64px;
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -92,15 +92,16 @@ input, select, textarea { font-family: var(--font-family); }
    ═══════════════════════════════════════════════════════ */
 nav {
   position: sticky; top: 0; z-index: 100;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  background: #fafafa;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 var(--space-lg);
   height: var(--nav-height);
+  transition: transform .25s ease;
 }
+nav.nav-hidden { transform: translateY(-100%); }
 .nav-progress {
-  position: absolute; bottom: 0; left: 0;
-  height: 2px;
+  position: fixed; top: 0; left: 0; z-index: 999;
+  height: 3px;
   background: var(--color-accent);
   transition: width .8s cubic-bezier(.16,1,.3,1);
 }
@@ -111,7 +112,7 @@ nav {
   display: flex; align-items: center; line-height: 0;
 }
 .tagline {
-  font-size: var(--font-size-xs);
+  font-size: 14px;
   color: var(--color-muted);
   font-weight: var(--font-weight-medium);
 }
@@ -121,7 +122,7 @@ nav {
   color: var(--color-fg);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  padding: 4px 12px;
+  padding: 8px 16px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   user-select: none;
@@ -132,10 +133,10 @@ nav {
 
 /* ? icon button */
 .nav-about-btn {
-  width: 28px; height: 28px;
+  width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
   border: 1px solid var(--color-border); border-radius: 50%;
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
+  font-size: 14px; font-weight: var(--font-weight-medium);
   color: var(--color-muted); cursor: pointer; transition: all .12s;
   background: var(--color-bg);
 }
@@ -144,8 +145,12 @@ nav {
 /* ═══════════════════════════════════════════════════════
    STATS BAR
    ═══════════════════════════════════════════════════════ */
-#stats-bar { display: none; border-bottom: 1px solid var(--color-border); }
-#stats-bar.open { display: block; }
+#stats-bar {
+  max-height: 0; overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  transition: max-height .35s cubic-bezier(.4,0,.2,1);
+}
+#stats-bar.open { max-height: 300px; }
 .stats {
   display: flex; overflow-x: auto;
 }
@@ -263,8 +268,14 @@ nav {
 .card-img img.art {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: contain; opacity: 1; transition: opacity .2s;
-  background: var(--punk-bg, #638596);
+  background: #EBE4D8;
 }
+.card-img .card-halftone {
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none; mix-blend-mode: multiply; opacity: .15;
+}
+.card-img .card-halftone img { width: 100%; height: 100%; object-fit: cover; }
+.card:hover .card-halftone { opacity: 0; }
 .card:hover .art { opacity: 0; }
 .card-img:has(.art) img.ref { opacity: 0; }
 .card:hover .card-img img.ref { opacity: 1; }
@@ -291,12 +302,6 @@ nav {
   pointer-events: all; cursor: pointer; user-select: none; transition: color .1s;
 }
 .hrt:hover, .hrt.on { color: #fff; }
-.cart-ic {
-  font-size: var(--font-size-xs); color: rgba(255,255,255,.7);
-  pointer-events: all; cursor: pointer; transition: color .1s;
-}
-.cart-ic:hover { color: #fff; }
-
 /* admin drop target */
 .card.admin-drop-target { outline: 2px solid var(--color-wip) !important; }
 .card.admin-drop-target .card-img::after {
@@ -315,9 +320,9 @@ nav {
   gap: 2px; padding: var(--space-lg); border-top: 1px solid var(--color-border);
 }
 .pg {
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
+  font-size: 16px; font-weight: var(--font-weight-medium);
   background: var(--color-bg); border: 1px solid var(--color-border);
-  color: var(--color-muted); padding: 4px 10px; border-radius: var(--radius-pill);
+  color: var(--color-muted); padding: 8px 16px; border-radius: var(--radius-pill);
   cursor: pointer; transition: all .12s; min-width: 30px; text-align: center;
 }
 .pg:hover { color: var(--color-fg); border-color: var(--color-fg); }
@@ -325,15 +330,43 @@ nav {
 .pg:disabled { opacity: .3; pointer-events: none; }
 .ps { color: var(--color-muted); font-size: var(--font-size-sm); padding: 0 2px; }
 
+/* review + explainer */
+.bottom-section {
+  max-width: 400px; margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+  display: flex; flex-direction: column; gap: var(--space-xl);
+}
+.explainer {
+  text-align: center;
+}
+.explainer h3 {
+  font-size: var(--font-size-lg); font-weight: var(--font-weight-black);
+  color: var(--color-fg); margin-bottom: var(--space-md);
+}
+.explainer p {
+  font-size: 16px; color: var(--color-muted); line-height: 1.6;
+  margin-bottom: var(--space-sm);
+}
+
 /* footer */
 .site-footer {
-  display: flex; align-items: center; justify-content: center; gap: var(--space-sm);
-  padding: var(--space-lg) var(--space-lg) var(--space-xl);
-  font-size: var(--font-size-xs); color: var(--color-muted);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl) var(--space-lg) calc(var(--space-2xl) + 16px);
+  border-top: 1px solid var(--color-border);
 }
-.site-footer a { color: var(--color-muted); transition: color .12s; }
-.site-footer a:hover { color: var(--color-fg); }
-.footer-sep { opacity: .3; }
+.footer-links {
+  display: flex; align-items: center; gap: var(--space-lg);
+}
+.footer-links a {
+  font-size: var(--font-size-base); font-weight: var(--font-weight-medium);
+  color: var(--color-muted); transition: color .12s;
+}
+.footer-links a:hover { color: var(--color-fg); }
+.footer-copy {
+  font-size: var(--font-size-sm); color: var(--color-muted);
+  font-weight: var(--font-weight-regular);
+}
 
 /* ═══════════════════════════════════════════════════════
    MODAL — flat, no shadow, no border-radius
@@ -347,7 +380,7 @@ nav {
 .backdrop.open { opacity: 1; pointer-events: all; }
 .modal {
   background: var(--color-bg); border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 24px;
   width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto;
   display: flex; flex-direction: column;
   transform: translateY(8px); transition: transform .18s;
@@ -358,25 +391,25 @@ nav {
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-md) var(--space-lg);
   border-bottom: 1px solid var(--color-border);
-  position: sticky; top: 0; background: var(--color-bg); z-index: 1;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  position: sticky; top: 0; background: var(--color-bg); z-index: 10;
+  border-radius: 24px 24px 0 0;
 }
 .modal-title {
   font-family: var(--font-mono);
-  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
-  letter-spacing: .06em;
+  font-size: 16px; font-weight: var(--font-weight-bold);
+  letter-spacing: .03em;
 }
 .modal-nav { display: flex; gap: 2px; }
 .mnb {
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
+  font-size: 16px; font-weight: var(--font-weight-medium);
   background: var(--color-bg); border: 1px solid var(--color-border);
-  color: var(--color-muted); padding: 3px 10px; border-radius: var(--radius-pill);
+  color: var(--color-muted); padding: 6px 16px; border-radius: var(--radius-pill);
   transition: all .12s;
 }
 .mnb:hover { color: var(--color-fg); border-color: var(--color-fg); }
 .modal-close {
   background: none; border: none; color: var(--color-muted);
-  font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1; margin-left: 6px;
+  font-size: 32px; cursor: pointer; padding: 0 4px; line-height: 1; margin-left: 6px;
   transition: color .12s;
 }
 .modal-close:hover { color: var(--color-fg); }
@@ -396,7 +429,7 @@ nav {
 .punk-info { flex: 1; display: flex; flex-direction: column; gap: 6px; }
 .punk-num {
   font-family: var(--font-mono);
-  font-size: var(--font-size-xl); font-weight: var(--font-weight-bold);
+  font-size: 28px; font-weight: var(--font-weight-bold);
   line-height: 1; letter-spacing: .02em;
 }
 .status-badge {
@@ -410,6 +443,14 @@ nav {
 .status-badge.mk-blue { color: #638596; border-color: #638596; }
 .status-badge.mk-red { color: #95554f; border-color: #95554f; }
 .status-badge.mk-purple { color: #8e6fb6; border-color: #8e6fb6; }
+.trait-pills { display: flex; gap: 4px; flex-wrap: wrap; }
+.trait-pill {
+  font-size: 11px; font-weight: var(--font-weight-medium);
+  padding: 3px 10px; border-radius: var(--radius-pill);
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  color: var(--color-fg); letter-spacing: .02em;
+}
+.trait-pill.type { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-bg); font-weight: var(--font-weight-bold); }
 .ipfs-link {
   font-size: 9px; color: var(--color-muted); word-break: break-all;
   font-weight: var(--font-weight-medium);
@@ -418,58 +459,42 @@ nav {
 
 /* drawing area */
 .drawing-area {
-  background: #638596; border: 1px solid var(--color-border);
+  background: #EBE4D8; border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   min-height: 140px; display: flex; align-items: center; justify-content: center; overflow: hidden;
+  position: relative;
 }
-.drawing-area img {
+.drawing-area > img {
   max-width: 100%; object-fit: contain;
-  image-rendering: pixelated; image-rendering: crisp-edges;
+  position: relative; z-index: 1;
+}
+.drawing-area .halftone-overlay {
+  position: absolute; inset: 0; z-index: 2;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: .2;
+}
+.drawing-area .halftone-overlay img {
+  width: 100%; height: 100%; object-fit: cover;
 }
 .drawing-empty {
-  font-size: var(--font-size-xs); color: rgba(255,255,255,.5);
+  font-size: var(--font-size-xs); color: rgba(0,0,0,.35);
   text-align: center; padding: var(--space-xl); font-weight: var(--font-weight-medium);
 }
-
-/* buy section */
-.buy-btn {
-  width: 100%; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
-  background: var(--color-fg); color: var(--color-bg); border: none;
-  padding: 10px; border-radius: var(--radius-pill);
-  cursor: pointer; transition: opacity .12s; letter-spacing: .02em;
-}
-.buy-btn:hover { opacity: .8; }
-.buy-expand { display: none; margin-top: var(--space-sm); border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
-.buy-opt {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: var(--space-md); border-bottom: 1px solid var(--color-border);
-  cursor: pointer; text-decoration: none; transition: background .12s; gap: var(--space-sm);
-}
-.buy-opt:last-child { border-bottom: none; }
-.buy-opt:hover { background: var(--color-surface); }
-.buy-opt-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-fg); }
-.buy-opt-sub { font-size: var(--font-size-xs); color: var(--color-muted); margin-top: 2px; }
 
 /* mint + acquire section */
 .acquire-section { display: flex; flex-direction: column; gap: var(--space-sm); }
 .acquire-section .section-label { margin-bottom: 0; }
 .mint-btn {
-  width: 100%; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  width: 100%; font-size: 16px; font-weight: var(--font-weight-bold);
   background: var(--color-fg); color: var(--color-bg); border: none;
-  padding: 10px; border-radius: var(--radius-pill);
+  padding: 16px; border-radius: var(--radius-pill);
   cursor: pointer; transition: opacity .12s; letter-spacing: .02em;
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .mint-btn:hover { opacity: .8; }
 .mint-btn:disabled { opacity: .4; cursor: not-allowed; }
 .mint-btn.minted { background: var(--color-accent); }
-.buy-original-btn {
-  width: 100%; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
-  background: none; color: var(--color-fg); border: 1px solid var(--color-border);
-  padding: 10px; border-radius: var(--radius-pill);
-  cursor: pointer; transition: all .12s; letter-spacing: .02em;
-}
-.buy-original-btn:hover { border-color: var(--color-fg); background: var(--color-surface); }
 .mint-status {
   font-size: var(--font-size-xs); color: var(--color-muted); text-align: center;
 }
@@ -482,7 +507,7 @@ nav {
 
 /* voting */
 .section-label {
-  font-size: 9px; font-weight: var(--font-weight-bold);
+  font-size: 14px; font-weight: var(--font-weight-bold);
   color: var(--color-muted); letter-spacing: .08em;
   text-transform: uppercase; margin-bottom: var(--space-sm);
 }
@@ -545,17 +570,17 @@ textarea.input { resize: vertical; min-height: 60px; }
 #auth-overlay.open { opacity: 1; pointer-events: all; }
 .auth-box {
   background: var(--color-bg); border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   padding: var(--space-xl) var(--space-xl);
   width: 360px; display: flex; flex-direction: column; gap: var(--space-lg);
   box-shadow: 0 16px 48px rgba(0,0,0,.1);
 }
 .auth-title {
-  font-size: var(--font-size-lg); font-weight: var(--font-weight-black);
+  font-size: 26px; font-weight: var(--font-weight-black);
   color: var(--color-fg); line-height: 1.2;
 }
 .auth-sub {
-  font-size: var(--font-size-sm); color: var(--color-muted); line-height: 1.5;
+  font-size: 16px; color: var(--color-muted); line-height: 1.25;
 }
 .auth-input {
   width: 100%; background: var(--color-bg);
@@ -573,9 +598,9 @@ textarea.input { resize: vertical; min-height: 60px; }
 }
 .auth-actions { display: flex; gap: var(--space-sm); }
 .auth-submit {
-  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  font-size: 16px; font-weight: var(--font-weight-bold);
   background: var(--color-fg); color: var(--color-bg);
-  border: none; padding: 10px 20px; border-radius: var(--radius-pill);
+  border: none; padding: 14px 28px; border-radius: var(--radius-pill);
   cursor: pointer; transition: opacity .12s;
 }
 .auth-submit:hover { opacity: .8; }
@@ -611,7 +636,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 #about-backdrop.open { opacity: 1; pointer-events: all; }
 .about-box {
   background: var(--color-bg); border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 20px;
   width: 100%; max-width: 480px; padding: var(--space-xl);
   box-shadow: 0 16px 48px rgba(0,0,0,.1);
 }
@@ -621,8 +646,8 @@ textarea.input { resize: vertical; min-height: 60px; }
   margin-bottom: var(--space-md);
 }
 .about-box p {
-  font-size: var(--font-size-sm); color: var(--color-muted);
-  line-height: 1.7; margin-bottom: var(--space-md);
+  font-size: 16px; color: var(--color-muted);
+  line-height: 1.4; margin-bottom: var(--space-md);
 }
 .about-box p:last-of-type { margin-bottom: var(--space-lg); }
 .about-box p strong { color: var(--color-fg); font-weight: var(--font-weight-bold); }
@@ -643,7 +668,7 @@ textarea.input { resize: vertical; min-height: 60px; }
    ADMIN PANEL
    ═══════════════════════════════════════════════════════ */
 #admin-panel {
-  background: var(--color-surface); border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
   padding: 0; max-height: 0; overflow: hidden;
   transition: max-height .25s ease, padding .25s ease;
 }
@@ -704,54 +729,6 @@ textarea.input { resize: vertical; min-height: 60px; }
 .radio-opt input:checked + .radio-lbl { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
 
 /* ═══════════════════════════════════════════════════════
-   CHECKOUT MODAL
-   ═══════════════════════════════════════════════════════ */
-#checkout-backdrop {
-  position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,.35);
-  display: flex; align-items: center; justify-content: center;
-  padding: var(--space-lg); opacity: 0; pointer-events: none; transition: opacity .18s;
-}
-#checkout-backdrop.open { opacity: 1; pointer-events: all; }
-.checkout-sheet {
-  background: var(--color-bg); width: 100%; max-width: 440px;
-  border: 1px solid var(--color-border); border-radius: var(--radius-md);
-  padding: var(--space-xl); max-height: 85vh; overflow-y: auto;
-  transform: translateY(8px); transition: transform .2s;
-  box-shadow: 0 16px 48px rgba(0,0,0,.12);
-}
-#checkout-backdrop.open .checkout-sheet { transform: none; }
-.cs-title {
-  font-family: var(--font-mono);
-  font-size: var(--font-size-lg); font-weight: var(--font-weight-black);
-  margin-bottom: var(--space-xs); letter-spacing: .02em;
-}
-.cs-sub { font-size: var(--font-size-sm); color: var(--color-muted); margin-bottom: var(--space-lg); }
-.cs-methods { display: flex; flex-direction: column; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.cs-method {
-  border: 1px solid var(--color-border); border-radius: var(--radius-md);
-  padding: var(--space-md);
-  cursor: pointer; transition: border-color .12s; text-decoration: none; display: block;
-}
-.cs-method:hover { border-color: var(--color-fg); }
-.cs-method-label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-fg); }
-.cs-method-sub { font-size: var(--font-size-xs); color: var(--color-muted); margin-top: 3px; }
-.cs-method-icons { display: flex; gap: 4px; margin-top: var(--space-sm); flex-wrap: wrap; }
-.cs-coin {
-  font-size: 9px; font-weight: var(--font-weight-medium);
-  background: var(--color-surface); border: 1px solid var(--color-border);
-  padding: 2px 6px; border-radius: var(--radius-pill); color: var(--color-muted);
-}
-.cs-eth-addr {
-  font-size: 9px; font-family: var(--font-mono);
-  background: var(--color-surface); border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) 10px; word-break: break-all; color: var(--color-fg);
-  margin-top: var(--space-sm); cursor: pointer;
-}
-.cs-eth-addr:hover { border-color: var(--color-fg); }
-
-/* ═══════════════════════════════════════════════════════
    TOAST
    ═══════════════════════════════════════════════════════ */
 #toast {
@@ -779,13 +756,13 @@ textarea.input { resize: vertical; min-height: 60px; }
   padding: var(--space-md); text-align: center;
 }
 .gate-prompt p {
-  font-size: var(--font-size-sm); color: var(--color-muted);
+  font-size: 16px; color: var(--color-muted);
   margin-bottom: var(--space-md); line-height: 1.5;
 }
 .gate-signup-btn {
-  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  font-size: 16px; font-weight: var(--font-weight-bold);
   background: var(--color-fg); color: var(--color-bg);
-  border: none; padding: 10px 24px; border-radius: var(--radius-pill);
+  border: none; padding: 10px 32px; border-radius: var(--radius-pill);
   cursor: pointer; transition: opacity .12s; display: inline-block;
 }
 .gate-signup-btn:hover { opacity: .8; }
@@ -799,7 +776,7 @@ textarea.input { resize: vertical; min-height: 60px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
   .stat { min-width: 68px; padding: var(--space-sm) var(--space-md); }
   .stat-val { font-size: var(--font-size-base); }
-  .auth-box, .checkout-sheet { padding: var(--space-lg); }
+  .auth-box { padding: var(--space-lg); }
 }
 </style>
 </head>
@@ -855,6 +832,40 @@ textarea.input { resize: vertical; min-height: 60px; }
       <button class="auth-submit" onclick="chkAdminAuth()">Unlock</button>
       <button class="auth-cancel" onclick="closeAdminAuth()">Cancel</button>
     </div>
+  </div>
+</div>
+
+<!-- STATS BAR (above nav — accordion pushes everything down) -->
+<div id="stats-bar">
+  <div class="stats">
+    <div class="stat"><div class="stat-lbl">Total</div><div class="stat-val">10,000</div></div>
+    <div class="stat"><div class="stat-lbl">Drawn</div><div class="stat-val" id="stat-done">0</div></div>
+    <div class="stat"><div class="stat-lbl">In progress</div><div class="stat-val" id="stat-wip">0</div></div>
+    <div class="stat"><div class="stat-lbl">Remaining</div><div class="stat-val" id="stat-rem">10,000</div></div>
+    <div class="stat"><div class="stat-lbl">Complete</div><div class="stat-val" id="stat-pct">0.0%</div></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div class="search-wrap">
+      <span class="search-ic">⌕</span>
+      <input type="text" id="search" placeholder="Search punk #..." oninput="doFilter()">
+    </div>
+    <button class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterDrawer()" title="Filters">≡</button>
+  </div>
+  <div class="filter-drawer" id="filter-drawer">
+    <div class="filters">
+      <button class="fb on" onclick="setF('all',this)">All</button>
+      <button class="fb" onclick="setF('done',this)">Done</button>
+      <button class="fb" onclick="setF('in-progress',this)">In Progress</button>
+      <button class="fb" onclick="setF('not-started',this)">Queue</button>
+    </div>
+    <select class="sort-select" onchange="doFilter()">
+      <option value="id-asc">ID ↑</option>
+      <option value="id-desc">ID ↓</option>
+      <option value="votes">Most Loved</option>
+      <option value="done-first">Done First</option>
+    </select>
   </div>
 </div>
 
@@ -914,40 +925,6 @@ textarea.input { resize: vertical; min-height: 60px; }
   </div>
 </div>
 
-<!-- STATS BAR -->
-<div id="stats-bar">
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">Total</div><div class="stat-val">10,000</div></div>
-    <div class="stat"><div class="stat-lbl">Drawn</div><div class="stat-val" id="stat-done">0</div></div>
-    <div class="stat"><div class="stat-lbl">In progress</div><div class="stat-val" id="stat-wip">0</div></div>
-    <div class="stat"><div class="stat-lbl">Remaining</div><div class="stat-val" id="stat-rem">10,000</div></div>
-    <div class="stat"><div class="stat-lbl">Complete</div><div class="stat-val" id="stat-pct">0.0%</div></div>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="controls">
-    <div class="search-wrap">
-      <span class="search-ic">⌕</span>
-      <input type="text" id="search" placeholder="Search punk #..." oninput="doFilter()">
-    </div>
-    <button class="filter-toggle" id="filter-toggle-btn" onclick="toggleFilterDrawer()" title="Filters">≡</button>
-  </div>
-  <div class="filter-drawer" id="filter-drawer">
-    <div class="filters">
-      <button class="fb on" onclick="setF('all',this)">All</button>
-      <button class="fb" onclick="setF('done',this)">Done</button>
-      <button class="fb" onclick="setF('in-progress',this)">In Progress</button>
-      <button class="fb" onclick="setF('not-started',this)">Queue</button>
-    </div>
-    <select class="sort-select" onchange="doFilter()">
-      <option value="id-asc">ID ↑</option>
-      <option value="id-desc">ID ↓</option>
-      <option value="votes">Most Loved</option>
-      <option value="done-first">Done First</option>
-    </select>
-  </div>
-</div>
-
 <!-- GRID -->
 <div class="grid-wrap">
   <div class="grid" id="grid"></div>
@@ -955,14 +932,21 @@ textarea.input { resize: vertical; min-height: 60px; }
 </div>
 <div class="pag" id="pag"></div>
 
+<div class="bottom-section">
+  <div class="explainer">
+    <h3>How collecting works</h3>
+    <p>When a drawing is finished, it gets saved on the blockchain forever. Once it's up there, you have 24 hours to collect your own copy. Just connect your wallet and hit "Collect." It costs a tiny bit of ETH (like a few pennies) and half of that goes to the artist.</p>
+    <p>After 24 hours, the window closes and no more copies can be made. If you got one, it's yours forever.</p>
+  </div>
+</div>
+
 <footer class="site-footer">
-  <span>© Derrick Kempf (DEWD)</span>
-  <span class="footer-sep">|</span>
-  <a href="https://x.com/derrickkempf" target="_blank" rel="noopener">X</a>
-  <span class="footer-sep">|</span>
-  <a href="https://instagram.com/derrickkempf" target="_blank" rel="noopener">IG</a>
-  <span class="footer-sep">|</span>
-  <a href="https://dewd.cool" target="_blank" rel="noopener">dewd.cool</a>
+  <div class="footer-links">
+    <a href="https://x.com/derrickkempf" target="_blank" rel="noopener">X</a>
+    <a href="https://instagram.com/derrickkempf" target="_blank" rel="noopener">IG</a>
+    <a href="https://dewd.cool" target="_blank" rel="noopener">dewd.cool</a>
+  </div>
+  <div class="footer-copy">© Derrick Kempf (DEWD)</div>
 </footer>
 
 <!-- MODAL -->
@@ -997,35 +981,6 @@ textarea.input { resize: vertical; min-height: 60px; }
 
 <div id="toast"></div>
 
-<!-- CHECKOUT -->
-<div id="checkout-backdrop" onclick="if(event.target===this)closeCheckout()">
-  <div class="checkout-sheet">
-    <div class="cs-title" id="cs-title">Buy Punk #0000</div>
-    <div class="cs-sub">Choose how you want to pay. Artwork shipped digitally after payment confirmed.</div>
-    <div class="cs-methods">
-      <a class="cs-method" href="STRIPE_LINK_HERE" target="_blank" rel="noopener" id="cs-stripe">
-        <div class="cs-method-label">Card payment</div>
-        <div class="cs-method-sub">Visa, Mastercard, Apple Pay, Google Pay — via Stripe</div>
-      </a>
-      <div class="cs-method">
-        <div class="cs-method-label">Ethereum</div>
-        <div class="cs-method-sub">Send ETH to this address — DM to confirm</div>
-        <div class="cs-eth-addr" onclick="copyAddr(this)" title="Click to copy">YOUR_ETH_ADDRESS_HERE</div>
-        <div class="cs-method-icons">
-          <span class="cs-coin">ETH</span><span class="cs-coin">USDC</span><span class="cs-coin">USDT</span>
-        </div>
-      </div>
-      <div class="cs-method">
-        <div class="cs-method-label">Bitcoin</div>
-        <div class="cs-method-sub">Send BTC to this address — DM to confirm</div>
-        <div class="cs-eth-addr" onclick="copyAddr(this)" title="Click to copy">YOUR_BTC_ADDRESS_HERE</div>
-        <div class="cs-method-icons"><span class="cs-coin">BTC</span></div>
-      </div>
-    </div>
-    <button class="btn-secondary" style="width:100%;padding:10px" onclick="closeCheckout()">Close</button>
-  </div>
-</div>
-
 <script>
 // ═══════════════════════════════════════════════════════
 // CONFIG
@@ -1039,14 +994,17 @@ const PER   = 200;
 const CONTRACT = '0xb47e3cd837dDF8e4c57F05d70Ab865de6e193BBB';
 const RPC      = 'https://cloudflare-eth.com';
 
-// Mint contract (ERC-1155 via networked.art)
+// VV Mint contract (ERC-1155) — https://docs.mint.vv.xyz
 const MINT_CONTRACT = '0x38df3eed74fccacc7243b39ee3429d0366d666ce';
-const UNIT_PRICE    = 125536n; // wei per mint
 const MINT_ABI = [
-  'function create(string tokenName, string tokenDescription, bytes tokenArtifact, uint32 tokenRenderer, uint128 tokenData) external',
-  'function mint(uint256 tokenId, uint256 amount) external payable',
-  'function totalSupply(uint256 tokenId) external view returns (uint256)',
-  'function nextTokenId() external view returns (uint256)',
+  'function create(string tokenName, string tokenDescription, bytes[] tokenArtifact, uint32 tokenRenderer, uint128 tokenData)',
+  'function mint(uint256 tokenId, uint256 amount) payable',
+  'function mintOpenUntil(uint256 tokenId) view returns (uint256)',
+  'function latestTokenId() view returns (uint256)',
+  'function tokens(uint256) view returns (string name, string description, uint32 renderer, uint32 mintedBlock, uint64 closeAt, uint128 data)',
+  'function owner() view returns (address)',
+  'function withdraw()',
+  'function prepareArtifact(uint256 tokenId, bytes[] tokenArtifact, bool clear)',
 ];
 
 // ── Global state ──
@@ -1058,6 +1016,39 @@ let curMk    = 'all';
 let adminOn  = false;
 let curM     = null;
 const mkCache = {};
+const traitCache = {};
+
+// Fetch CryptoPunk traits from on-chain data
+async function fetchTraits(id) {
+  if (traitCache[id]) return traitCache[id];
+  try {
+    const resp = await fetch(`https://api.cryptopunks.app/v1/punks/${id}`);
+    if (resp.ok) {
+      const data = await resp.json();
+      const traits = data.attributes || data.traits || [];
+      traitCache[id] = traits;
+      return traits;
+    }
+  } catch(e) {}
+  // Fallback: scrape the well-known punk types + attributes from embedded data
+  return traitCache[id] || null;
+}
+
+// Well-known punk type & attribute data (compact lookup loaded on demand)
+const PUNK_TYPES = ['Male 1','Male 2','Male 3','Male 4','Female 1','Female 2','Female 3','Female 4','Zombie','Ape','Alien'];
+const PUNK_ATTRS = [
+  'Beanie','Choker','Pilot Helmet','Tiara','Orange Side','Buck Teeth','Welding Goggles','Pigtails','Pink With Hat',
+  'Top Hat','Spots','Rosy Cheeks','Blonde Short','Wild White Hair','Cowboy Hat','Wild Blonde','Straight Hair Blonde',
+  'Big Shades','Red Mohawk','Half Shaved','Blonde Bob','Vampire Hair','Clown Hair Green','Straight Hair Dark',
+  'Straight Hair','Silver Chain','Dark Hair','Purple Hair','Gold Chain','Medical Mask','Tassle Hat','Fedora',
+  'Police Cap','Clown Nose','Smile','Cap Forward','Hoodie','Front Beard Dark','Front Beard','Goat','Mole',
+  'Purple Eye Shadow','Blue Eye Shadow','Green Eye Shadow','Stringy Hair','Bandana','Classic Shades','Shadow Beard',
+  'Regular Shades','Big Beard','Pipe','VR','Frumpy Hair','Crazy Hair','Police Cap','Do-rag','Wild Hair',
+  'Knitted Cap','Mohawk Dark','Mohawk','Mohawk Thin','Cap','Small Shades','Nerd Glasses','Eye Mask','Eye Patch',
+  'Horned Rim Glasses','3D Glasses','Handlebars','Earring','Cigarette','Normal Beard','Normal Beard Black',
+  'Chinstrap','Luxurious Beard','Mustache','Headband','Shaved Head','Messy Hair','Peak Spike','Clown Eyes Blue',
+  'Clown Eyes Green','Hot Lipstick','Black Lipstick','Purple Lipstick','Muttonchops','Frown'
+];
 
 // ── Visitor ID ──
 const VID = (() => {
@@ -1327,7 +1318,7 @@ function render() {
   grid.innerHTML = slice.map(p => {
     const dc    = p.status === 'done' ? 'done' : p.status === 'in-progress' ? 'wip' : '';
     const mkcls = mkCache[p.id] || '';
-    const art   = p.art ? `<img class="art" src="${p.art}" loading="lazy">` : '';
+    const art   = p.art ? `<img class="art" src="${p.art}" loading="lazy"><div class="card-halftone"><img src="/halftone-pattern.svg" alt=""></div>` : '';
     const hc    = p.votedBy.includes(VID) ? 'on' : '';
     const ddAttrs = adminOn
       ? `ondragover="cardDragOver(event,${p.id})" ondragleave="cardDragLeave(event,${p.id})" ondrop="cardDrop(event,${p.id})"`
@@ -1340,7 +1331,7 @@ function render() {
           <span class="card-id">#${String(p.id).padStart(4,'0')}</span>
           <div class="overlay-actions">
             <span class="hrt ${hc}" onclick="event.stopPropagation();qv(${p.id},this)">♥ ${p.votes}</span>
-            ${p.mintStatus === 'minted' ? `<span class="cart-ic" style="color:var(--color-accent)" title="Minted">✦</span>` : p.mintStatus === 'waiting' ? `<span class="cart-ic" onclick="event.stopPropagation();mintPunk(${p.id})" title="Mint">⬡</span>` : p.status === 'done' ? `<span class="cart-ic" onclick="event.stopPropagation();buyOriginal(${p.id})" title="Buy">⬡</span>` : ''}
+            ${p.mintStatus === 'minted' ? `<span style="color:var(--color-accent)" title="Minted">✦</span>` : ''}
           </div>
         </div>
       </div>
@@ -1413,7 +1404,7 @@ function renderMBody(id) {
   const mkCls2 = mkcls || 'ns';
 
   const drawHTML = p.art
-    ? `<div class="drawing-area"><img src="${p.art}" alt="drawing"></div>`
+    ? `<div class="drawing-area"><img src="${p.art}" alt="drawing"><div class="halftone-overlay"><img src="/halftone-pattern.svg" alt=""></div></div>`
     : `<div class="drawing-area"><div class="drawing-empty">drawing not yet uploaded</div></div>`;
 
   const admHTML = adminOn ? `
@@ -1446,35 +1437,41 @@ function renderMBody(id) {
     ? `<a class="ipfs-link" href="${esc(p.ipfs)}" target="_blank" rel="noopener">${esc(p.ipfs.slice(0,55))}…</a>`
     : '';
 
-  // Mint + Buy Original section
+  // Mint section — two flows:
+  // 1. Admin (owner): "Create Token" → calls create() on VV Mint contract, opens 24h window
+  // 2. Public: "Collect" → calls mint() during the 24h window
   let acquireHTML = '';
-  if (p.status === 'done' || p.mintStatus === 'waiting' || p.mintStatus === 'minted') {
-    const isMinted = p.mintStatus === 'minted';
-    const isWaiting = p.mintStatus === 'waiting';
+  const isMinted = p.mintStatus === 'minted';
+  const isWaiting = p.mintStatus === 'waiting';
 
-    const mintBtnText = isMinted
-      ? '✦ Minted on-chain'
-      : isWaiting
-        ? '⬡ Mint this Dewd (free + gas)'
-        : '⬡ Not available for mint';
-
-    const mintBtnClass = isMinted ? 'mint-btn minted' : 'mint-btn';
-    const mintDisabled = isMinted || !isWaiting ? 'disabled' : '';
-    const mintClick = !isMinted && isWaiting ? `onclick="mintPunk(${id})"` : '';
-
-    const statusText = isMinted
-      ? `Minted — Token #${p.tokenId ?? '?'}`
-      : isWaiting
-        ? 'Waiting room — connect wallet to mint'
-        : '';
-    const statusClass = isMinted ? 'mint-status minted' : 'mint-status waiting';
-
+  if (isMinted) {
     acquireHTML = `
       <div class="acquire-section">
         <div class="section-label">Collect</div>
-        <button class="${mintBtnClass}" ${mintDisabled} ${mintClick}>${mintBtnText}</button>
-        ${statusText ? `<div class="${statusClass}">${statusText}</div>` : ''}
-        <button class="buy-original-btn" onclick="buyOriginal(${id})">$10 — Buy the original drawing</button>
+        <button class="mint-btn minted" disabled>✦ Minted on-chain</button>
+        <div class="mint-status minted">Token #${p.tokenId ?? '?'}</div>
+      </div>`;
+  } else if (isWaiting && p.tokenId != null) {
+    // 24h mint window open — anyone can collect
+    acquireHTML = `
+      <div class="acquire-section">
+        <div class="section-label">Collect</div>
+        <button class="mint-btn" onclick="mintPunk(${id})">⬡ Collect this Dewd</button>
+        <div class="mint-status waiting">24h mint window — connect wallet to collect</div>
+      </div>`;
+  } else if (adminOn && p.status === 'done' && p.optimizedSvg && !isWaiting) {
+    // Admin can create the token on-chain
+    acquireHTML = `
+      <div class="acquire-section">
+        <div class="section-label">Mint</div>
+        <button class="mint-btn" onclick="createToken(${id})">⬡ Create token on-chain</button>
+        <div class="mint-status">Registers SVG on VV Mint and opens a 24h collect window</div>
+      </div>`;
+  } else if (p.status === 'done') {
+    acquireHTML = `
+      <div class="acquire-section">
+        <div class="section-label">Collect</div>
+        <button class="mint-btn" disabled>⬡ Not available yet</button>
       </div>`;
   }
 
@@ -1497,7 +1494,7 @@ function renderMBody(id) {
         <button class="gate-signup-btn" onclick="openEmailAuth()">Sign in with email</button>
       </div>`;
 
-  const mkBadgeHTML = mkTxt ? `<span class="status-badge ${mkCls2}" id="mkb-${id}">${mkTxt}</span>` : `<span class="status-badge ns" id="mkb-${id}"></span>`;
+  const traitsContainerId = `traits-${id}`;
 
   document.getElementById('modal-body').innerHTML = `
     <div class="punk-row">
@@ -1506,10 +1503,7 @@ function renderMBody(id) {
       </div>
       <div class="punk-info">
         <div class="punk-num">#${String(id).padStart(4,'0')}</div>
-        <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-          <span class="status-badge ${sc}">${st}</span>
-          ${mkBadgeHTML}
-        </div>
+        <div class="trait-pills" id="${traitsContainerId}"><span class="status-badge ${sc}" style="font-size:9px">${st}</span></div>
         ${ipfsRow}
       </div>
     </div>
@@ -1519,7 +1513,7 @@ function renderMBody(id) {
     <div>
       <div class="section-label">Community love</div>
       <div class="vote-row">
-        <button class="vote-btn ${loved?'on':''}" onclick="${isSignedIn() ? `vote(${id})` : `openEmailAuth()`}">${loved?'♥ Loved':'♥ Love'}</button>
+        <button class="vote-btn ${loved?'on':''}" onclick="${isSignedIn() ? `vote(${id})` : `openEmailAuth()`}">${loved?'♥':'♥'}</button>
         <span class="vote-count">${p.votes}</span>
       </div>
     </div>
@@ -1527,7 +1521,68 @@ function renderMBody(id) {
       <div class="section-label">Comments (${p.comments.length})</div>
       <div class="comments">${cmtsHTML}</div>
       ${commentFormHTML}
-    </div>`;
+    </div>
+    `;
+
+  // Load trait pills for all punks
+  loadTraitPills(id, traitsContainerId);
+}
+
+let _traitsLoaded = false;
+let _traitsPromise = null;
+async function loadTraitPills(id, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (traitCache[id]) { renderTraitPills(el, traitCache[id]); return; }
+  // Load the full CSV once
+  if (!_traitsLoaded && !_traitsPromise) {
+    _traitsPromise = fetch('https://raw.githubusercontent.com/cryptopunksnotdead/punks.attributes/master/original/cryptopunks.csv')
+      .then(r => r.ok ? r.text() : '')
+      .then(csv => { if (csv) parsePunkTraitsCSV(csv); _traitsLoaded = true; })
+      .catch(e => { console.log('Trait fetch failed:', e); _traitsLoaded = true; });
+  }
+  if (_traitsPromise) await _traitsPromise;
+  if (traitCache[id]) { renderTraitPills(el, traitCache[id]); return; }
+}
+
+function parsePunkTraitsCSV(csv) {
+  const lines = csv.trim().split('\n');
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i];
+    // Format: id, type, gender, skin tone, count, accessories (/ separated)
+    // e.g.: 0, Human, Female, Medium, 3, Green Eye Shadow / Earring / Blonde Bob
+    const firstComma = line.indexOf(',');
+    if (firstComma === -1) continue;
+    const punkId = parseInt(line.slice(0, firstComma).trim());
+    if (isNaN(punkId)) continue;
+    const rest = line.slice(firstComma + 1);
+    // Split only the first 4 commas to isolate: type, gender, skin tone, count
+    // Everything after the 5th field is accessories separated by " / "
+    const parts = [];
+    let cur = rest, ci;
+    for (let f = 0; f < 4; f++) {
+      ci = cur.indexOf(',');
+      if (ci === -1) { parts.push(cur.trim()); cur = ''; break; }
+      parts.push(cur.slice(0, ci).trim());
+      cur = cur.slice(ci + 1);
+    }
+    const accStr = cur.trim();
+    const type = parts[0] || '';
+    const gender = parts[1] || '';
+    const accessories = accStr ? accStr.split('/').map(s => s.trim()).filter(Boolean) : [];
+    const traits = [];
+    if (gender && type) traits.push(`${gender} ${type}`);
+    else if (type) traits.push(type);
+    traits.push(...accessories);
+    traitCache[punkId] = traits;
+  }
+}
+
+function renderTraitPills(el, traits) {
+  if (!traits || traits.length === 0) return;
+  el.innerHTML = traits.map((t, i) =>
+    `<span class="trait-pill ${i === 0 ? 'type' : ''}">${t}</span>`
+  ).join('');
 }
 
 function patchMkBadge(id) {
@@ -1647,7 +1702,7 @@ function qv(id, el) {
   if (!p.votedBy.includes(VID)) {
     p.votes++; p.votedBy.push(VID);
     save(); el.classList.add('on'); el.textContent = '♥ ' + p.votes;
-    toast('♥ Loved', true);
+    toast('♥', true);
   }
 }
 
@@ -1853,40 +1908,33 @@ async function connectWallet() {
   }
 }
 
-async function mintPunk(id) {
+// ── Admin: create token on-chain (owner only) ──
+// Registers the SVG artifact on the VV Mint contract and opens a 24h mint window.
+async function createToken(id) {
   const p = punks[id];
-  if (!p.optimizedSvg) { toast('No optimized SVG for this punk'); return; }
-
-  // Connect wallet if not already
-  if (!walletSigner) {
-    const signer = await connectWallet();
-    if (!signer) return;
-  }
+  if (!p.optimizedSvg) { toast('No optimized SVG — upload an SVG first'); return; }
+  if (!walletSigner) { const s = await connectWallet(); if (!s) return; }
 
   const paddedId = String(id).padStart(4, '0');
-
   try {
-    toast('Preparing mint transaction…');
-
+    toast('Creating token on-chain…');
     const contract = new ethers.Contract(MINT_CONTRACT, MINT_ABI, walletSigner);
 
-    // Encode optimized SVG as bytes
+    // Encode SVG as bytes array (VV Mint expects bytes[])
     const svgBytes = ethers.toUtf8Bytes(p.optimizedSvg);
 
-    // Call create() — registers the token on-chain with the artwork
-    // tokenRenderer: 0 (default), tokenData: 0 (no extra data)
     const tx = await contract.create(
       `Punk Dewd #${paddedId}`,
       `Hand-drawn crypto punk #${paddedId} by Derrick Kempf`,
-      svgBytes,
-      0,
-      0
+      [svgBytes],  // bytes[] array
+      0,           // default renderer
+      0            // no extra data
     );
 
     toast('Transaction sent — waiting for confirmation…');
     const receipt = await tx.wait();
 
-    // Try to extract the token ID from the event logs
+    // Extract token ID from TransferSingle event
     let tokenId = null;
     for (const log of receipt.logs) {
       try {
@@ -1895,19 +1943,71 @@ async function mintPunk(id) {
           tokenId = Number(parsed.args.id);
           break;
         }
-      } catch { /* not our event, skip */ }
+      } catch { /* skip */ }
     }
 
-    p.mintStatus = 'minted';
+    p.mintStatus = 'waiting';
     if (tokenId !== null) p.tokenId = tokenId;
     save(); doFilter();
     if (curM === id) renderMBody(id);
-    toast(`Punk #${paddedId} minted on-chain!`, true);
+    toast(`Token created! 24h mint window open for #${paddedId}`, true);
   } catch (err) {
     const msg = err.reason || err.message || 'Transaction failed';
-    // If create() is owner-only and user isn't owner, give helpful message
     if (msg.includes('owner') || msg.includes('Ownable') || msg.includes('caller is not')) {
-      toast('Only the contract owner can create new tokens. Ask admin to pre-create.');
+      toast('Only the contract owner can create tokens');
+    } else {
+      toast('Create failed: ' + msg.slice(0, 100));
+    }
+    console.error('Create error:', err);
+  }
+}
+
+// ── Public: mint (collect) a token during the 24h window ──
+async function mintPunk(id) {
+  const p = punks[id];
+  if (!p.tokenId && p.tokenId !== 0) { toast('No on-chain token for this punk yet'); return; }
+  if (!walletSigner) { const s = await connectWallet(); if (!s) return; }
+
+  const paddedId = String(id).padStart(4, '0');
+  try {
+    toast('Preparing mint…');
+    const contract = new ethers.Contract(MINT_CONTRACT, MINT_ABI, walletSigner);
+
+    // Check if mint window is still open
+    const closeAt = await contract.mintOpenUntil(p.tokenId);
+    const now = Math.floor(Date.now() / 1000);
+    if (Number(closeAt) < now) {
+      toast('Mint window has closed for this punk');
+      p.mintStatus = 'minted';
+      save(); if (curM === id) renderMBody(id);
+      return;
+    }
+
+    // VV Mint price = block.basefee * 60,000 per token
+    // Estimate with a buffer since basefee can change between blocks
+    const feeData = await walletProvider.getFeeData();
+    const baseFee = feeData.gasPrice || feeData.maxFeePerGas || 30000000000n;
+    const mintPrice = baseFee * 60000n;
+    const mintPriceWithBuffer = mintPrice * 120n / 100n; // 20% buffer
+
+    const priceEth = ethers.formatEther(mintPrice);
+    toast(`Minting for ~${Number(priceEth).toFixed(6)} ETH…`);
+
+    const tx = await contract.mint(p.tokenId, 1, { value: mintPriceWithBuffer });
+    toast('Transaction sent — waiting for confirmation…');
+    await tx.wait();
+
+    p.mintStatus = 'minted';
+    save(); doFilter();
+    if (curM === id) renderMBody(id);
+    toast(`Punk #${paddedId} collected!`, true);
+  } catch (err) {
+    const msg = err.reason || err.message || 'Transaction failed';
+    if (msg.includes('MintClosed')) {
+      toast('Mint window has closed for this punk');
+      p.mintStatus = 'minted'; save();
+    } else if (msg.includes('MintPriceNotMet')) {
+      toast('Price changed — try again (gas fluctuation)');
     } else {
       toast('Mint failed: ' + msg.slice(0, 100));
     }
@@ -1915,32 +2015,29 @@ async function mintPunk(id) {
   }
 }
 
-async function buyOriginal(id) {
-  try {
-    toast('Opening checkout…');
-    const resp = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ punkId: id }),
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error);
-    window.location.href = data.url;
-  } catch (err) {
-    toast('Checkout error: ' + err.message);
-  }
-}
-
 // ═══════════════════════════════════════════════════════
 // UI TOGGLES
 // ═══════════════════════════════════════════════════════
-function toggleBuyOptions(btn) {
-  const expand = btn.nextElementSibling;
-  const isOpen = expand.style.display !== 'none';
-  expand.style.display = isOpen ? 'none' : 'block';
-  btn.textContent = isOpen ? 'Buy this drawing' : 'Hide options';
+function toggleStats() {
+  const bar = document.getElementById('stats-bar');
+  const opening = !bar.classList.contains('open');
+  bar.classList.toggle('open');
+  if (opening) window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function toggleStats() { document.getElementById('stats-bar').classList.toggle('open'); }
+
+// Show nav on scroll up, hide on scroll down
+let _lastScrollY = 0;
+let _navEl = null;
+window.addEventListener('scroll', () => {
+  if (!_navEl) _navEl = document.querySelector('nav');
+  const y = window.scrollY;
+  if (y > _lastScrollY && y > 80) {
+    _navEl.classList.add('nav-hidden');
+  } else {
+    _navEl.classList.remove('nav-hidden');
+  }
+  _lastScrollY = y;
+}, { passive: true });
 function toggleFilterDrawer() {
   const drawer = document.getElementById('filter-drawer');
   const btn    = document.getElementById('filter-toggle-btn');
@@ -1948,20 +2045,6 @@ function toggleFilterDrawer() {
   btn.classList.toggle('active', isOpen);
 }
 
-function openCheckout(id) {
-  document.getElementById('cs-title').textContent = `Buy Punk #${String(id).padStart(4,'0')}`;
-  const stripeBase = 'STRIPE_LINK_HERE';
-  document.getElementById('cs-stripe').href = stripeBase + (stripeBase.includes('?') ? '&' : '?') + 'punk=' + id;
-  document.getElementById('checkout-backdrop').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeCheckout() {
-  document.getElementById('checkout-backdrop').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function copyAddr(el) {
-  navigator.clipboard.writeText(el.textContent.trim()).then(() => toast('Address copied', true));
-}
 
 // ═══════════════════════════════════════════════════════
 // ADMIN AUTH
@@ -2027,7 +2110,7 @@ function toast(m, ok=false) {
 // KEYBOARD
 // ═══════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeM(); closeEmailAuth(); closeAdminAuth(); closeCheckout(); closeAbout(); }
+  if (e.key === 'Escape') { closeM(); closeEmailAuth(); closeAdminAuth(); closeAbout(); }
   if (e.key === 'Enter' && document.getElementById('admin-auth-overlay').classList.contains('open')) chkAdminAuth();
   if (curM !== null) {
     if (e.key === 'ArrowRight') navM(1);
@@ -2064,14 +2147,6 @@ const urlParams = new URLSearchParams(location.search);
 if (urlParams.has('admin')) {
   history.replaceState(null, '', location.pathname);
   adminClick();
-}
-if (urlParams.has('purchased')) {
-  const purchasedId = parseInt(urlParams.get('purchased'));
-  history.replaceState(null, '', location.pathname);
-  if (!isNaN(purchasedId) && purchasedId >= 0 && purchasedId < TOTAL) {
-    toast(`Purchase confirmed for Punk #${String(purchasedId).padStart(4,'0')}!`, true);
-    setTimeout(() => openM(purchasedId), 500);
-  }
 }
 if (urlParams.has('punk')) {
   const punkId = parseInt(urlParams.get('punk'));
