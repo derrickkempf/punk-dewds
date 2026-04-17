@@ -332,7 +332,7 @@ nav.nav-hidden { transform: translateY(-100%); }
 
 /* review + explainer */
 .bottom-section {
-  max-width: 400px; margin: 0 auto;
+  max-width: 640px; margin: 0 auto;
   padding: var(--space-2xl) var(--space-lg);
   display: flex; flex-direction: column; gap: var(--space-xl);
 }
@@ -933,6 +933,9 @@ textarea.input { resize: vertical; min-height: 60px; }
 <div class="pag" id="pag"></div>
 
 <div class="bottom-section">
+  <div>
+    <iframe src="https://talktoreview.com/embed/dewd" width="100%" height="400" frameborder="0" style="border-radius:12px;border:1px solid var(--color-border)"></iframe>
+  </div>
   <div class="explainer">
     <h3>How collecting works</h3>
     <p>When a drawing is finished, it gets saved on the blockchain forever. Once it's up there, you have 24 hours to collect your own copy. Just connect your wallet and hit "Collect." It costs a tiny bit of ETH (like a few pennies) and half of that goes to the artist.</p>
@@ -985,7 +988,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 // ═══════════════════════════════════════════════════════
 // CONFIG
 // ═══════════════════════════════════════════════════════
-const HASH  = '84dda36ac15613bf1e268360ff8ad7a7d894f231954371aa1bf913b8d9930fa0';
+const HASH  = '1b8b39e2e32eb3491dd00a85126073fff218f7d75b8f12d9b922757bc8595ca5';
 const IMG   = id => `https://cryptopunks.app/images/cryptopunks/punk${String(id).padStart(4,'0')}.png`;
 const TOTAL = 10000;
 const PER   = 200;
