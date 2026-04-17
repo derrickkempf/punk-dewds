@@ -1,54 +1,50 @@
-// ONE-TIME database setup endpoint
-// Hit /api/setup?secret=YOUR_ADMIN_PASSWORD to create tables
-// Delete this file after running it once.
+// POST /api/auth/send-code
+// Accepts { email }, generates a 6-digit code, stores it, sends it.
 import { NextResponse } from 'next/server'
 import { query } from '@/lib/db'
-import crypto from 'crypto'
+import { generateCode } from '@/lib/auth'
+import { sendVerificationEmail } from '@/lib/email'
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url)
-  const secret = searchParams.get('secret')
-
-  // Must provide admin password
-  if (!secret) {
-    return NextResponse.json({ error: 'Missing ?secret= parameter' }, { status: 401 })
-  }
-
-  const hash = crypto.createHash('sha256').update(secret).digest('hex')
-  if (hash !== process.env.ADMIN_HASH) {
-    return NextResponse.json({ error: 'Invalid secret' }, { status: 403 })
-  }
-
+export async function POST(request) {
   try {
-    await query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id            SERIAL PRIMARY KEY,
-        email         TEXT UNIQUE NOT NULL,
-        created_at    TIMESTAMPTZ DEFAULT now()
-      )
-    `)
+    const { email } = await request.json()
 
-    await query(`
-      CREATE TABLE IF NOT EXISTS verification_codes (
-        id            SERIAL PRIMARY KEY,
-        email         TEXT NOT NULL,
-        code          TEXT NOT NULL,
-        expires_at    TIMESTAMPTZ NOT NULL,
-        used          BOOLEAN DEFAULT false,
-        created_at    TIMESTAMPTZ DEFAULT now()
-      )
-    `)
+    if (!email || !email.includes('@') || !email.includes('.')) {
+      return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
+    }
 
-    await query(`
-      CREATE INDEX IF NOT EXISTS idx_verification_codes_email
-        ON verification_codes (email, used, expires_at)
-    `)
+    const normalizedEmail = email.toLowerCase().trim()
 
-    return NextResponse.json({
-      ok: true,
-      message: 'Tables created: users, verification_codes. You can delete app/api/setup/route.js now.'
-    })
+    // Rate limit: max 10 codes per email per hour
+    const recent = await query(
+      `SELECT COUNT(*) as cnt FROM verification_codes
+       WHERE email = $1 AND created_at > now() - interval '1 hour'`,
+      [normalizedEmail]
+    )
+    if (parseInt(recent[0].cnt) >= 10) {
+      return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 })
+    }
+
+    // Generate and store code (10-minute expiry)
+    const code = generateCode()
+    await query(
+      `INSERT INTO verification_codes (email, code, expires_at)
+       VALUES ($1, $2, now() + interval '10 minutes')`,
+      [normalizedEmail, code]
+    )
+
+    // Upsert user — create if new, do nothing if exists
+    await query(
+      `INSERT INTO users (email) VALUES ($1) ON CONFLICT (email) DO NOTHING`,
+      [normalizedEmail]
+    )
+
+    // Send email
+    await sendVerificationEmail(normalizedEmail, code)
+
+    return NextResponse.json({ ok: true })
   } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('send-code error:', err)
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 })
   }
 }
