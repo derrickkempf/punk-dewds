@@ -340,6 +340,10 @@ nav.nav-hidden { transform: translateY(-100%); }
   display: flex; flex-direction: column; gap: var(--space-xl);
   max-width: 960px; align-items: center;
 }
+.sticker:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, .1);
+}
 .support-link { display: inline-block; transition: transform .15s ease; }
 .support-link:hover { transform: scale(1.05); }
 .support-link svg { max-width: 280px; height: auto; }
@@ -941,7 +945,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 
 <div class="bottom-section">
   <a href="https://dewd.cool" target="_blank" rel="noopener" style="display:inline-block;transition:transform .15s ease;">
-    <img src="/support-sticker.svg" alt="Support your local artist" style="width:280px;height:auto;display:block;">
+    <img src="/support-sticker.svg" class="sticker" alt="Support your local artist" style="width:280px;height:auto;display:block;">
   </a>
 </div>
 
