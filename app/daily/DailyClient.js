@@ -41,8 +41,6 @@ export default function DailyClient() {
   const [streak, setStreak] = useState(0)
   const [isAdmin, setIsAdmin] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [pwOpen, setPwOpen] = useState(false)
-  const [pw, setPw] = useState('')
   const [toast, setToast] = useState(null)
 
   const isToday  = date === todayISO()
@@ -67,6 +65,7 @@ export default function DailyClient() {
     }
   }, [])
 
+  // Check admin status (cookie set by /app.html admin login)
   useEffect(() => {
     fetch('/api/admin/session', { cache: 'no-store' })
       .then(r => r.json())
@@ -96,7 +95,8 @@ export default function DailyClient() {
         body: JSON.stringify({ date, day: next }),
       })
       if (r.status === 401) {
-        showToast('Sign in as admin to update', true)
+        // Cookie expired or got cleared — silently re-lock
+        setIsAdmin(false)
         return false
       }
       if (!r.ok) {
@@ -113,7 +113,7 @@ export default function DailyClient() {
   }
 
   const toggle = (key) => {
-    if (!isAdmin) { setPwOpen(true); return }
+    if (!isAdmin) return
     const a = day[key]
     const nextDone = !a.done
     persist({
@@ -123,29 +123,12 @@ export default function DailyClient() {
   }
 
   const setCount = (key, value) => {
-    if (!isAdmin) { setPwOpen(true); return }
+    if (!isAdmin) return
     const n = Math.max(0, Math.min(9999, parseInt(value || '0', 10) || 0))
     persist({
       ...day,
       [key]: { done: n >= 100 ? true : day[key].done, count: n },
     })
-  }
-
-  const submitPw = async (e) => {
-    e.preventDefault()
-    const r = await fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw }),
-    })
-    if (r.ok) {
-      setIsAdmin(true)
-      setPwOpen(false)
-      setPw('')
-      showToast('Unlocked')
-    } else {
-      showToast('Wrong password', true)
-    }
   }
 
   return (
@@ -173,18 +156,6 @@ export default function DailyClient() {
           <span className="streak-dot" />
           {streak} day streak
         </div>
-        {!isAdmin ? (
-          <button className="pd-btn" onClick={() => setPwOpen(true)}>Sign in</button>
-        ) : (
-          <button
-            className="pd-btn pd-btn--ghost"
-            onClick={async () => {
-              await fetch('/api/admin/login', { method: 'DELETE' })
-              setIsAdmin(false)
-              showToast('Signed out')
-            }}
-          >Sign out</button>
-        )}
       </div>
 
       {/* Tasks */}
@@ -192,12 +163,13 @@ export default function DailyClient() {
         {ACTIVITIES.map((a, i) => {
           const v = day[a.key]
           return (
-            <li key={a.key} className={`task ${v.done ? 'done' : ''}`}>
+            <li key={a.key} className={`task ${v.done ? 'done' : ''} ${isAdmin ? '' : 'readonly'}`}>
               <span className="task-num">{i + 1}.</span>
               <button
                 className={`check ${v.done ? 'on' : ''}`}
                 onClick={() => toggle(a.key)}
-                aria-label={`Mark ${a.label} ${v.done ? 'incomplete' : 'complete'}`}
+                disabled={!isAdmin}
+                aria-label={`${v.done ? 'Completed' : 'Not yet'}: ${a.label}`}
               >
                 {v.done ? '✓' : ''}
               </button>
@@ -210,6 +182,8 @@ export default function DailyClient() {
                 placeholder="0"
                 value={v.count || ''}
                 onChange={(e) => setCount(a.key, e.target.value)}
+                readOnly={!isAdmin}
+                disabled={!isAdmin}
                 aria-label={`${a.label} count`}
               />
               <span className="task-target">/ {a.target}</span>
@@ -219,27 +193,6 @@ export default function DailyClient() {
       </ul>
 
       <p className="hint">Use ← → to flip between days.</p>
-
-      {/* Password overlay */}
-      {pwOpen && (
-        <div className="overlay" onClick={(e) => e.target === e.currentTarget && setPwOpen(false)}>
-          <form className="overlay-card" onSubmit={submitPw}>
-            <div className="pd-label">Admin password</div>
-            <input
-              className="pd-input"
-              type="password"
-              autoFocus
-              value={pw}
-              onChange={(e) => setPw(e.target.value)}
-              placeholder="••••••"
-            />
-            <div className="overlay-actions">
-              <button type="button" className="pd-btn pd-btn--ghost" onClick={() => setPwOpen(false)}>Cancel</button>
-              <button type="submit" className="pd-btn pd-btn--primary">Unlock</button>
-            </div>
-          </form>
-        </div>
-      )}
 
       {/* Toast */}
       {toast && <div className={`pd-toast show ${toast.error ? 'error' : ''}`}>{toast.msg}</div>}
@@ -300,7 +253,7 @@ export default function DailyClient() {
           transition: background .12s;
         }
         .task:last-child { border-bottom: none; }
-        .task:hover { background: var(--color-surface); }
+        .task:not(.readonly):hover { background: var(--color-surface); }
         .task.done .task-label { color: var(--color-muted); }
 
         .task-num {
@@ -317,13 +270,15 @@ export default function DailyClient() {
           font-weight: var(--font-weight-bold);
           color: var(--color-bg);
           transition: all .12s;
+          cursor: pointer;
         }
-        .check:hover { border-color: var(--color-fg); }
+        .check:not(:disabled):hover { border-color: var(--color-fg); }
         .check.on {
           background: var(--color-fg);
           border-color: var(--color-fg);
           color: var(--color-bg);
         }
+        .check:disabled { cursor: default; }
         .task-label {
           font-size: var(--font-size-base);
           font-weight: var(--font-weight-medium);
@@ -341,6 +296,11 @@ export default function DailyClient() {
           outline: none;
         }
         .task-count:focus { border-color: var(--color-fg); }
+        .task-count:disabled {
+          background: var(--color-surface);
+          color: var(--color-muted);
+          cursor: default;
+        }
         .task-target {
           font-size: var(--font-size-xs);
           color: var(--color-muted);
@@ -352,24 +312,6 @@ export default function DailyClient() {
           text-align: center;
           font-size: var(--font-size-xs);
           color: var(--color-muted);
-        }
-
-        .overlay {
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,.4);
-          display: flex; align-items: center; justify-content: center;
-          z-index: 300;
-        }
-        .overlay-card {
-          background: var(--color-bg);
-          padding: var(--space-lg);
-          border-radius: var(--radius-md);
-          width: min(420px, 92vw);
-          box-shadow: 0 20px 60px rgba(0,0,0,.2);
-        }
-        .overlay-actions {
-          display: flex; justify-content: flex-end; gap: var(--space-sm);
-          margin-top: var(--space-md);
         }
 
         @media (max-width: 520px) {

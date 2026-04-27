@@ -1,4 +1,3 @@
-import Nav from '../components/Nav'
 import DailyClient from './DailyClient'
 
 export const metadata = {
@@ -10,11 +9,8 @@ export const dynamic = 'force-dynamic'
 
 export default function DailyPage() {
   return (
-    <>
-      <Nav />
-      <main className="pd-container">
-        <DailyClient />
-      </main>
-    </>
+    <main className="pd-container">
+      <DailyClient />
+    </main>
   )
 }
