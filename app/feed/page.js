@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Nav from '../components/Nav'
 import { readJSON } from '@/lib/storage'
 import { getAdminSession } from '@/lib/admin'
 
@@ -50,7 +49,6 @@ export default async function FeedPage() {
 
   return (
     <>
-      <Nav />
       <main className="pd-container">
         <div className="feed-head">
           <div>
