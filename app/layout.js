@@ -1,5 +1,6 @@
 import './globals.css'
 import Script from 'next/script'
+import Chrome from './components/Chrome'
 
 export const metadata = {
   title: 'Punk Dewds — 10,000 hand-drawn crypto punks',
@@ -17,6 +18,9 @@ export default function RootLayout({ children }) {
           type="module"
           strategy="beforeInteractive"
         />
+        {/* Chrome renders the nav + the stats drawer + the about modal so they
+            work on every page (not just /app.html). */}
+        <Chrome />
         {children}
       </body>
     </html>

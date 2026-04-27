@@ -110,6 +110,69 @@ nav {
   .tagline { display: none; }
 }
 
+/* ═══ Stats drawer (mirrors #stats-bar in /app.html) ═══ */
+#stats-bar {
+  max-height: 0; overflow: hidden;
+  border-bottom: 1px solid var(--color-border);
+  transition: max-height .35s cubic-bezier(.4,0,.2,1);
+}
+#stats-bar.open { max-height: 300px; }
+.stats { display: flex; overflow-x: auto; }
+.stat {
+  flex: 1; min-width: 80px;
+  padding: var(--space-md) var(--space-lg);
+  border-right: 1px solid var(--color-border);
+  display: flex; flex-direction: column; gap: 2px;
+}
+.stat:last-child { border-right: none; }
+.stat-lbl {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.stat-val {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
+  line-height: 1.2;
+}
+
+/* ═══ About modal (mirrors #about-backdrop in /app.html) ═══ */
+#about-backdrop {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-lg);
+  opacity: 0; pointer-events: none; transition: opacity .18s;
+}
+#about-backdrop.open { opacity: 1; pointer-events: all; }
+.about-box {
+  background: var(--color-bg); border: 1px solid var(--color-border);
+  border-radius: 20px;
+  width: 100%; max-width: 480px; padding: var(--space-xl);
+  box-shadow: 0 16px 48px rgba(0,0,0,.1);
+}
+.about-box p {
+  font-size: 16px; color: var(--color-muted);
+  line-height: 1.4; margin-bottom: var(--space-md);
+}
+.about-box p:last-of-type { margin-bottom: var(--space-lg); }
+.about-box p strong { color: var(--color-fg); font-weight: var(--font-weight-bold); }
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-fg); color: var(--color-bg);
+  border: 1px solid var(--color-fg); border-radius: var(--radius-pill);
+  padding: 10px 18px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: opacity .12s;
+}
+.btn-primary:hover { opacity: .8; }
+
 /* ═══ Container ═══ */
 .pd-container {
   max-width: 720px;
