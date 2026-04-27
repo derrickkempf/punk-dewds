@@ -2050,6 +2050,13 @@ async function chkAdminAuth() {
   const h  = await sha256(pw);
   if (h === HASH) {
     sessionStorage.setItem('pd-ok', '1');
+    // Also create a server-side admin cookie so /daily and /feed unlock too.
+    // Best-effort — we don't block the UI on it.
+    fetch('/api/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    }).catch(() => {});
     document.getElementById('admin-auth-overlay').classList.remove('open');
     document.getElementById('admin-pw').value = '';
     document.getElementById('admin-auth-error').style.display = 'none';
@@ -2072,6 +2079,8 @@ function unlockAdmin() {
 function exitAdmin() {
   adminOn = false;
   sessionStorage.removeItem('pd-ok');
+  // Also clear the server-side admin cookie so /daily and /feed re-lock.
+  fetch('/api/admin/login', { method: 'DELETE' }).catch(() => {});
   document.getElementById('admin-panel').classList.remove('open');
   render();
 }
