@@ -1,11 +1,10 @@
 'use client'
 import { usePathname } from 'next/navigation'
 
-// Mirrors the nav in /public/app.html so that /daily and /feed look identical
-// to the punks tracker. Logo + tagline left, pills on the right.
-//
-// The dotlottie-wc web component is loaded from the layout's <Script>.
-export default function Nav() {
+// Mirrors the nav in /public/app.html so /daily and /feed look identical.
+// Logo + tagline left, pills right. Count pill toggles a stats drawer and
+// the ? button opens the About modal — both rendered by <Chrome>.
+export default function Nav({ statsCount = 0, onToggleStats, onOpenAbout }) {
   const pathname = usePathname() || ''
   const isDaily = pathname.startsWith('/daily')
   const isFeed  = pathname.startsWith('/feed')
@@ -14,7 +13,6 @@ export default function Nav() {
     <nav>
       <div className="nav-left">
         <a className="logo" href="/app.html" aria-label="Punks">
-          {/* dotlottie-wc is registered as a web component; React just renders it */}
           <dotlottie-wc
             src="/punk-dewds-logo.lottie"
             style={{ width: '154px', height: '35px' }}
@@ -35,15 +33,21 @@ export default function Nav() {
           href="/feed"
           title="Feed"
         >Feed</a>
-        <a className="nav-pill" href="/app.html" title="Punks tracker">
-          <b>0</b> / 10,000
-        </a>
-        <a
+        <button
+          className="nav-pill"
+          onClick={onToggleStats}
+          title="Punks tracker stats"
+          type="button"
+        >
+          <b>{statsCount.toLocaleString()}</b> / 10,000
+        </button>
+        <button
           className="nav-about-btn"
-          href="/app.html"
+          onClick={onOpenAbout}
           title="About this project"
           aria-label="About"
-        >?</a>
+          type="button"
+        >?</button>
       </div>
     </nav>
   )
