@@ -76,19 +76,22 @@ export default function Chrome() {
 
   const progressPct = parseFloat(stats.pct) || 0
 
+  // Toggle stats — scroll to top when opening (mirrors app.html)
+  const handleToggleStats = useCallback(() => {
+    setStatsOpen(prev => {
+      const opening = !prev
+      if (opening) window.scrollTo({ top: 0, behavior: 'smooth' })
+      return opening
+    })
+  }, [])
+
   return (
     <>
       {/* Progress bar — same as #nav-progress in /app.html */}
       <div className="nav-progress" style={{ width: progressPct + '%' }} />
 
-      <Nav
-        statsCount={stats.done}
-        onToggleStats={() => setStatsOpen(s => !s)}
-        onOpenAbout={() => setAboutOpen(true)}
-        hidden={navHidden}
-      />
-
-      {/* Stats drawer — same look as #stats-bar in /app.html */}
+      {/* Stats bar sits ABOVE the nav in the DOM, just like /app.html.
+          When open it pushes the nav (and page) down. */}
       <div id="stats-bar" className={statsOpen ? 'open' : ''}>
         <div className="stats">
           <div className="stat">
@@ -114,7 +117,12 @@ export default function Chrome() {
         </div>
       </div>
 
-      {/* Page content is rendered by {children} in layout.js */}
+      <Nav
+        statsCount={stats.done}
+        onToggleStats={handleToggleStats}
+        onOpenAbout={() => setAboutOpen(true)}
+        hidden={navHidden}
+      />
 
       {/* About modal — same content as /app.html */}
       <div
