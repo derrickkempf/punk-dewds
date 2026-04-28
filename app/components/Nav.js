@@ -4,13 +4,14 @@ import { usePathname } from 'next/navigation'
 // Mirrors the nav in /public/app.html so /daily and /feed look identical.
 // Logo + tagline left, pills right. Count pill toggles a stats drawer and
 // the ? button opens the About modal — both rendered by <Chrome>.
-export default function Nav({ statsCount = 0, onToggleStats, onOpenAbout }) {
+// `hidden` prop drives scroll-direction-aware hide/show (matches app.html).
+export default function Nav({ statsCount = 0, onToggleStats, onOpenAbout, hidden = false }) {
   const pathname = usePathname() || ''
   const isDaily = pathname.startsWith('/daily')
   const isFeed  = pathname.startsWith('/feed')
 
   return (
-    <nav>
+    <nav className={hidden ? 'nav-hidden' : ''}>
       <div className="nav-left">
         <a className="logo" href="/app.html" aria-label="Punks">
           <dotlottie-wc

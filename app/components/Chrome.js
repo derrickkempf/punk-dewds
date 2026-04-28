@@ -1,11 +1,11 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import Nav from './Nav'
 
 const TOTAL = 10000
 
 // Read the same localStorage key that /app.html uses ('pd-v2')
-// and compute the four stats (Drawn / WIP / Remaining / Complete %).
+// and compute the four stats (Total / Drawn / WIP / Remaining / Complete %).
 function readStats() {
   if (typeof window === 'undefined') {
     return { done: 0, wip: 0, rem: TOTAL, pct: '0.0' }
@@ -29,6 +29,8 @@ export default function Chrome() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [aboutOpen, setAboutOpen] = useState(false)
   const [stats, setStats] = useState({ done: 0, wip: 0, rem: TOTAL, pct: '0.0' })
+  const [navHidden, setNavHidden] = useState(false)
+  const lastScrollY = useRef(0)
 
   // Refresh stats whenever the drawer opens, when window regains focus,
   // and on storage events (covers cross-tab updates from /app.html).
@@ -47,6 +49,22 @@ export default function Chrome() {
 
   useEffect(() => { if (statsOpen) refresh() }, [statsOpen, refresh])
 
+  // Scroll-direction-aware nav — hide on scroll down, show on scroll up
+  // (mirrors the behavior in /app.html)
+  useEffect(() => {
+    const onScroll = () => {
+      const y = window.scrollY
+      if (y > lastScrollY.current && y > 80) {
+        setNavHidden(true)
+      } else {
+        setNavHidden(false)
+      }
+      lastScrollY.current = y
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   // ESC closes overlays
   useEffect(() => {
     const onKey = (e) => {
@@ -56,17 +74,27 @@ export default function Chrome() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const progressPct = parseFloat(stats.pct) || 0
+
   return (
     <>
+      {/* Progress bar — same as #nav-progress in /app.html */}
+      <div className="nav-progress" style={{ width: progressPct + '%' }} />
+
       <Nav
         statsCount={stats.done}
         onToggleStats={() => setStatsOpen(s => !s)}
         onOpenAbout={() => setAboutOpen(true)}
+        hidden={navHidden}
       />
 
       {/* Stats drawer — same look as #stats-bar in /app.html */}
       <div id="stats-bar" className={statsOpen ? 'open' : ''}>
         <div className="stats">
+          <div className="stat">
+            <div className="stat-lbl">Total</div>
+            <div className="stat-val">{TOTAL.toLocaleString()}</div>
+          </div>
           <div className="stat">
             <div className="stat-lbl">Drawn</div>
             <div className="stat-val">{stats.done.toLocaleString()}</div>
@@ -85,6 +113,8 @@ export default function Chrome() {
           </div>
         </div>
       </div>
+
+      {/* Page content is rendered by {children} in layout.js */}
 
       {/* About modal — same content as /app.html */}
       <div
