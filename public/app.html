@@ -146,11 +146,11 @@ nav.nav-hidden { transform: translateY(-100%); }
 .nav-about-btn:hover { color: var(--color-fg); border-color: var(--color-fg); }
 
 /* ═══════════════════════════════════════════════════════
-   STATS BAR
+   STATS BAR — dark theme
    ═══════════════════════════════════════════════════════ */
 #stats-bar {
   max-height: 0; overflow: hidden;
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-fg);
   transition: max-height .35s cubic-bezier(.4,0,.2,1);
 }
 #stats-bar.open { max-height: 300px; }
@@ -160,75 +160,75 @@ nav.nav-hidden { transform: translateY(-100%); }
 .stat {
   flex: 1; min-width: 80px;
   padding: var(--space-md) var(--space-lg);
-  border-right: 1px solid var(--color-border);
+  border-right: 1px solid rgba(255,255,255,.1);
   display: flex; flex-direction: column; gap: 2px;
 }
 .stat:last-child { border-right: none; }
 .stat-lbl {
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  color: var(--color-muted);
+  color: rgba(255,255,255,.45);
   text-transform: uppercase;
   letter-spacing: .06em;
 }
 .stat-val {
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
-  color: var(--color-fg);
+  color: #fff;
   line-height: 1.2;
 }
 
 /* ═══════════════════════════════════════════════════════
-   CONTROLS — search + filter
+   CONTROLS — search + filter (dark, inside stats bar)
    ═══════════════════════════════════════════════════════ */
 .controls {
   display: flex; align-items: center; gap: var(--space-sm);
   padding: var(--space-sm) var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255,255,255,.1);
 }
 .search-wrap { position: relative; flex: 1; }
 .search-wrap input {
-  width: 100%; background: var(--color-bg);
-  border: 1px solid var(--color-border); color: var(--color-fg);
+  width: 100%; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12); color: #fff;
   font-size: var(--font-size-sm); padding: 6px 12px 6px 28px;
   border-radius: var(--radius-pill);
   outline: none; transition: border-color .15s;
 }
-.search-wrap input:focus { border-color: var(--color-fg); }
-.search-wrap input::placeholder { color: var(--color-muted); }
+.search-wrap input:focus { border-color: rgba(255,255,255,.4); }
+.search-wrap input::placeholder { color: rgba(255,255,255,.35); }
 .search-ic {
   position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
-  color: var(--color-muted); font-size: var(--font-size-sm); pointer-events: none;
+  color: rgba(255,255,255,.35); font-size: var(--font-size-sm); pointer-events: none;
 }
 .filter-toggle {
   flex-shrink: 0; width: 32px; height: 32px;
-  border: 1px solid var(--color-border); color: var(--color-muted);
+  border: 1px solid rgba(255,255,255,.12); color: rgba(255,255,255,.45);
   border-radius: var(--radius-pill);
   display: flex; align-items: center; justify-content: center;
   font-size: var(--font-size-sm); transition: all .12s;
 }
-.filter-toggle:hover { border-color: var(--color-fg); color: var(--color-fg); }
-.filter-toggle.active { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.filter-toggle:hover { border-color: rgba(255,255,255,.4); color: #fff; }
+.filter-toggle.active { background: #fff; color: var(--color-fg); border-color: #fff; }
 
 /* filter drawer */
 .filter-drawer {
   display: none; padding: var(--space-sm) var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255,255,255,.1);
   gap: var(--space-sm); align-items: center;
 }
 .filter-drawer.open { display: flex; flex-wrap: wrap; }
 .filters { display: flex; gap: var(--space-xs); flex-wrap: wrap; }
 .fb {
   font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
-  background: var(--color-bg); border: 1px solid var(--color-border);
-  color: var(--color-muted); padding: 4px 12px; border-radius: var(--radius-pill);
+  background: transparent; border: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.45); padding: 4px 12px; border-radius: var(--radius-pill);
   cursor: pointer; transition: all .12s;
 }
-.fb.on { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
+.fb.on { background: #fff; color: var(--color-fg); border-color: #fff; }
 .sort-select {
   font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
-  background: var(--color-bg); border: 1px solid var(--color-border);
-  color: var(--color-fg); padding: 4px 8px; border-radius: var(--radius-pill);
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
+  color: #fff; padding: 4px 8px; border-radius: var(--radius-pill);
   outline: none; cursor: pointer;
 }
 
@@ -781,6 +781,208 @@ textarea.input { resize: vertical; min-height: 60px; }
 .gate-signup-btn:hover { opacity: .8; }
 
 /* ═══════════════════════════════════════════════════════
+   NAV — counter dot + daily button
+   ═══════════════════════════════════════════════════════ */
+.nav-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; background: var(--color-accent);
+  vertical-align: middle; margin-right: 2px;
+}
+.nav-counter { font-variant-numeric: tabular-nums; }
+.nav-daily-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.nav-daily-btn.active {
+  background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg);
+}
+.nav-daily-icon { font-size: 14px; line-height: 1; }
+
+/* ═══════════════════════════════════════════════════════
+   DAILY PANEL — slide-out right sidebar
+   ═══════════════════════════════════════════════════════ */
+#daily-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 150;
+  width: 50vw; max-width: 560px;
+  background: var(--color-bg);
+  border-left: 1px solid var(--color-border);
+  box-shadow: -8px 0 32px rgba(0,0,0,.06);
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+#daily-panel.open { transform: translateX(0); }
+body.daily-open .grid-wrap,
+body.daily-open .pag,
+body.daily-open .bottom-section,
+body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s cubic-bezier(.4,0,.2,1); }
+
+.dp-close {
+  position: absolute; top: var(--space-md); right: var(--space-md);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--color-muted); cursor: pointer;
+  border: none; background: none; transition: color .12s; z-index: 10;
+}
+.dp-close:hover { color: var(--color-fg); }
+
+.dp-inner { padding: var(--space-xl) var(--space-lg); }
+
+/* Day navigation */
+.dp-day-strip {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-lg);
+}
+.dp-day-label { text-align: center; }
+.dp-eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  margin-bottom: 4px;
+}
+.dp-date {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: -0.01em;
+}
+.dp-arrow {
+  font-size: var(--font-size-lg);
+  color: var(--color-muted);
+  background: none; border: none; cursor: pointer;
+  padding: var(--space-sm);
+  transition: color .12s;
+}
+.dp-arrow:hover { color: var(--color-fg); }
+.dp-arrow:disabled { opacity: .3; cursor: default; }
+
+/* Tasks */
+.dp-tasks {
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.dp-task {
+  display: grid;
+  grid-template-columns: 32px 36px 1fr;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--color-border);
+  transition: background .12s;
+}
+.dp-task:last-child { border-bottom: none; }
+.dp-task:hover { background: var(--color-surface); }
+.dp-task.done .dp-task-label { color: var(--color-muted); }
+.dp-task-num {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-muted);
+}
+.dp-check {
+  width: 28px; height: 28px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  font-size: 16px; font-weight: var(--font-weight-bold);
+  color: var(--color-bg);
+  transition: all .12s; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.dp-check:hover { border-color: var(--color-fg); }
+.dp-check.on {
+  background: var(--color-fg); border-color: var(--color-fg); color: var(--color-bg);
+}
+.dp-task-label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-fg);
+}
+.dp-hint {
+  margin-top: var(--space-md);
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+}
+
+/* Feed section inside daily panel */
+.dp-feed-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--color-border);
+}
+.dp-feed-title-row { display: flex; align-items: center; gap: var(--space-sm); }
+.dp-feed-icon { font-size: 20px; line-height: 1; }
+.dp-feed-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+.dp-feed-sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-muted);
+  margin-top: 2px;
+}
+.dp-new-post-btn {
+  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
+  background: var(--color-bg); border: 1px solid var(--color-border);
+  color: var(--color-fg); padding: 8px 14px; border-radius: var(--radius-pill);
+  cursor: pointer; transition: all .12s; white-space: nowrap;
+}
+.dp-new-post-btn:hover { border-color: var(--color-fg); }
+
+.dp-posts {
+  display: flex; flex-direction: column; gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+.dp-post {
+  background: #fdf8f4; border-radius: var(--radius-md);
+  padding: var(--space-lg);
+}
+.dp-post-body {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-fg);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+.dp-post-time {
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+  margin-top: var(--space-sm);
+}
+.dp-post-media {
+  display: block; width: 100%; height: auto;
+  border-radius: var(--radius-md);
+  margin-top: var(--space-md);
+  background: var(--color-surface);
+}
+.dp-post-media.video-thumb {
+  position: relative; cursor: pointer;
+}
+.dp-empty {
+  text-align: center; padding: var(--space-lg);
+  font-size: var(--font-size-sm); color: var(--color-muted);
+}
+
+/* Composer (inline in panel) */
+.dp-composer { margin-top: var(--space-lg); display: none; flex-direction: column; gap: var(--space-sm); }
+.dp-composer.open { display: flex; }
+.dp-composer textarea {
+  width: 100%; min-height: 80px; resize: vertical;
+  font-family: var(--font-family); font-size: var(--font-size-sm);
+  padding: 10px 12px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); outline: none;
+  transition: border-color .15s;
+}
+.dp-composer textarea:focus { border-color: var(--color-fg); }
+.dp-composer-actions { display: flex; justify-content: flex-end; gap: var(--space-sm); }
+
+/* ═══════════════════════════════════════════════════════
    RESPONSIVE
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 560px) {
@@ -790,6 +992,14 @@ textarea.input { resize: vertical; min-height: 60px; }
   .stat { min-width: 68px; padding: var(--space-sm) var(--space-md); }
   .stat-val { font-size: var(--font-size-base); }
   .auth-box { padding: var(--space-lg); }
+  #daily-panel { width: 100vw; max-width: 100vw; }
+  body.daily-open .grid-wrap,
+  body.daily-open .pag,
+  body.daily-open .bottom-section,
+  body.daily-open .site-footer { margin-right: 0; }
+}
+@media (max-width: 720px) {
+  .tagline { display: none; }
 }
 </style>
 </head>
@@ -848,14 +1058,14 @@ textarea.input { resize: vertical; min-height: 60px; }
   </div>
 </div>
 
-<!-- STATS BAR (above nav — accordion pushes everything down) -->
+<!-- STATS BAR (above nav — dark accordion) -->
 <div id="stats-bar">
   <div class="stats">
     <div class="stat"><div class="stat-lbl">Total</div><div class="stat-val">10,000</div></div>
     <div class="stat"><div class="stat-lbl">Drawn</div><div class="stat-val" id="stat-done">0</div></div>
-    <div class="stat"><div class="stat-lbl">WIP</div><div class="stat-val" id="stat-wip">0</div></div>
+    <div class="stat"><div class="stat-lbl">Drawing</div><div class="stat-val" id="stat-wip">0</div></div>
     <div class="stat"><div class="stat-lbl">Remaining</div><div class="stat-val" id="stat-rem">10,000</div></div>
-    <div class="stat"><div class="stat-lbl">Complete</div><div class="stat-val" id="stat-pct">0.0%</div></div>
+    <div class="stat"><div class="stat-lbl">Complete</div><div class="stat-val" id="stat-pct">10,000</div></div>
   </div>
 
   <!-- CONTROLS -->
@@ -891,13 +1101,63 @@ textarea.input { resize: vertical; min-height: 60px; }
     <span class="tagline">10,000 hand-drawn crypto punks by Derrick Kempf.</span>
   </div>
   <div style="display:flex;align-items:center;gap:var(--space-sm)">
-    <a class="nav-pill" href="/daily" title="Daily tracker">Daily</a>
-    <a class="nav-pill" href="/feed" title="Feed">Feed</a>
-    <button class="nav-pill" onclick="toggleStats()"><b id="nav-done">0</b> / 10,000</button>
+    <button class="nav-pill nav-counter" onclick="toggleStats()"><span class="nav-dot"></span> <span id="nav-done">0</span>/10,000</button>
+    <button class="nav-pill nav-daily-btn" id="nav-daily-btn" onclick="toggleDaily()"><span class="nav-daily-icon">📋</span> Daily</button>
     <button class="nav-about-btn" onclick="openAbout()" title="About this project">?</button>
   </div>
   <div class="nav-progress" id="nav-progress" style="width:0%"></div>
 </nav>
+
+<!-- DAILY + FEED PANEL (slide-out right sidebar) -->
+<div id="daily-panel">
+  <button class="dp-close" onclick="toggleDaily()" aria-label="Close">✕</button>
+  <div class="dp-inner">
+    <!-- Day strip -->
+    <div class="dp-day-strip">
+      <button class="dp-arrow" onclick="dpShift(-1)" aria-label="Previous day">←</button>
+      <div class="dp-day-label">
+        <div class="dp-eyebrow" id="dp-eyebrow">TODAY</div>
+        <div class="dp-date" id="dp-date">—</div>
+      </div>
+      <button class="dp-arrow" id="dp-next" onclick="dpShift(1)" aria-label="Next day">→</button>
+    </div>
+
+    <!-- Tasks -->
+    <ul class="dp-tasks" id="dp-tasks"></ul>
+    <p class="dp-hint">Use ← → to flip between days.</p>
+
+    <!-- Feed -->
+    <div class="dp-feed-head">
+      <div>
+        <div class="dp-feed-title-row">
+          <span class="dp-feed-icon">📋</span>
+          <span class="dp-feed-title">Feed</span>
+        </div>
+        <div class="dp-feed-sub">Sketches, videos, and posts on the daily practice.</div>
+      </div>
+      <button class="dp-new-post-btn" id="dp-new-post" onclick="dpToggleComposer()" style="display:none">+ New Post</button>
+    </div>
+
+    <!-- Composer (admin only) -->
+    <div class="dp-composer" id="dp-composer">
+      <select id="dp-post-kind" style="font-family:var(--font-family);font-size:var(--font-size-sm);padding:6px 10px;border:1px solid var(--color-border);border-radius:var(--radius-sm);outline:none">
+        <option value="text">Text</option>
+        <option value="sketch">Sketch</option>
+        <option value="image">Image</option>
+        <option value="video">Video</option>
+      </select>
+      <textarea id="dp-post-body" placeholder="What's the story?"></textarea>
+      <input type="file" id="dp-post-file" accept="image/*" style="font-size:var(--font-size-xs)">
+      <div class="dp-composer-actions">
+        <button class="btn-secondary" onclick="dpToggleComposer()">Cancel</button>
+        <button class="btn-primary" id="dp-post-submit" onclick="dpSubmitPost()">Post</button>
+      </div>
+    </div>
+
+    <!-- Posts -->
+    <div id="dp-posts" class="dp-posts"></div>
+  </div>
+</div>
 
 <!-- ADMIN PANEL -->
 <div id="admin-panel">
@@ -951,7 +1211,6 @@ textarea.input { resize: vertical; min-height: 60px; }
   <a href="https://dewd.cool" target="_blank" rel="noopener" class="support-link">
     <img src="/support-sticker-cream.svg" alt="Support your local artist" >
   </a>
-  <iframe src="https://talktoreview.com/embed/dewd?columns=3" width="100%" height="400" frameborder="0" style="border-radius: 12px;" ></iframe>
 </div>
 
 <footer class="site-footer">
@@ -2074,6 +2333,7 @@ function closeAdminAuth() {
 function unlockAdmin() {
   adminOn = true;
   document.getElementById('admin-panel').classList.add('open');
+  document.getElementById('dp-new-post').style.display = '';
   render();
 }
 function exitAdmin() {
@@ -2082,6 +2342,8 @@ function exitAdmin() {
   // Also clear the server-side admin cookie so /daily and /feed re-lock.
   fetch('/api/admin/login', { method: 'DELETE' }).catch(() => {});
   document.getElementById('admin-panel').classList.remove('open');
+  document.getElementById('dp-new-post').style.display = 'none';
+  document.getElementById('dp-composer').classList.remove('open');
   render();
 }
 
@@ -2103,14 +2365,201 @@ function toast(m, ok=false) {
 // KEYBOARD
 // ═══════════════════════════════════════════════════════
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeM(); closeEmailAuth(); closeAdminAuth(); closeAbout(); }
+  if (e.key === 'Escape') {
+    if (dpOpen) { toggleDaily(); return; }
+    closeM(); closeEmailAuth(); closeAdminAuth(); closeAbout();
+  }
   if (e.key === 'Enter' && document.getElementById('admin-auth-overlay').classList.contains('open')) chkAdminAuth();
+  // Arrow keys: daily panel takes priority when open
+  if (dpOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+    if (e.key === 'ArrowLeft') dpShift(-1);
+    if (e.key === 'ArrowRight') dpShift(1);
+    return;
+  }
   if (curM !== null) {
     if (e.key === 'ArrowRight') navM(1);
     if (e.key === 'ArrowLeft')  navM(-1);
   }
   if (e.ctrlKey && e.shiftKey && e.key === 'A') adminClick();
 });
+
+// ═══════════════════════════════════════════════════════
+// DAILY + FEED PANEL
+// ═══════════════════════════════════════════════════════
+const DP_ACTIVITIES = [
+  { key: 'drawing',  label: 'Draw 100 dewds',  target: 100 },
+  { key: 'pushups',  label: '100 pushups',     target: 100 },
+  { key: 'crunches', label: '100 crunches',    target: 100 },
+];
+let dpDate = dpTodayISO();
+let dpDay  = { drawing: { done:false, count:0 }, pushups: { done:false, count:0 }, crunches: { done:false, count:0 } };
+let dpOpen = false;
+let dpFeedPosts = [];
+
+function dpTodayISO() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+function dpShiftDate(iso, days) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  dt.setUTCDate(dt.getUTCDate() + days);
+  return dt.toISOString().slice(0, 10);
+}
+function dpFormatDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d));
+  return dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' });
+}
+function dpFormatTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+    ' @ ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
+}
+
+function toggleDaily() {
+  dpOpen = !dpOpen;
+  document.getElementById('daily-panel').classList.toggle('open', dpOpen);
+  document.body.classList.toggle('daily-open', dpOpen);
+  document.getElementById('nav-daily-btn').classList.toggle('active', dpOpen);
+  if (dpOpen) {
+    dpDate = dpTodayISO();
+    dpLoadDay();
+    dpLoadFeed();
+    // Show "New Post" if admin
+    document.getElementById('dp-new-post').style.display = adminOn ? '' : 'none';
+  }
+}
+
+async function dpLoadDay() {
+  const isToday  = dpDate === dpTodayISO();
+  const isFuture = dpDate > dpTodayISO();
+  document.getElementById('dp-eyebrow').textContent = isToday ? 'TODAY' : isFuture ? 'FUTURE' : 'PAST';
+  document.getElementById('dp-date').textContent = dpFormatDate(dpDate);
+  document.getElementById('dp-next').disabled = isToday;
+
+  try {
+    const r = await fetch(`/api/daily?date=${dpDate}`, { cache: 'no-store' });
+    const j = await r.json();
+    dpDay = j.day || { drawing:{done:false,count:0}, pushups:{done:false,count:0}, crunches:{done:false,count:0} };
+  } catch {
+    dpDay = { drawing:{done:false,count:0}, pushups:{done:false,count:0}, crunches:{done:false,count:0} };
+  }
+  dpRenderTasks();
+}
+
+function dpRenderTasks() {
+  const el = document.getElementById('dp-tasks');
+  el.innerHTML = DP_ACTIVITIES.map((a, i) => {
+    const v = dpDay[a.key] || { done: false, count: 0 };
+    return `<li class="dp-task ${v.done ? 'done' : ''}">
+      <span class="dp-task-num">${i+1}.</span>
+      <button class="dp-check ${v.done ? 'on' : ''}" onclick="dpToggle('${a.key}')">${v.done ? '✓' : ''}</button>
+      <span class="dp-task-label">${a.label}</span>
+    </li>`;
+  }).join('');
+}
+
+async function dpToggle(key) {
+  if (!adminOn) { toast('Admin access required'); return; }
+  const cur = dpDay[key] || { done: false, count: 0 };
+  dpDay[key] = { done: !cur.done, count: !cur.done && cur.count === 0 ? 100 : cur.count };
+  dpRenderTasks();
+  try {
+    const r = await fetch('/api/daily', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: dpDate, day: dpDay }),
+    });
+    if (!r.ok) { toast('Save failed'); dpLoadDay(); return; }
+    toast('Saved', true);
+  } catch { toast('Save failed'); dpLoadDay(); }
+}
+
+function dpShift(dir) {
+  if (dir === 1 && dpDate === dpTodayISO()) return;
+  dpDate = dpShiftDate(dpDate, dir);
+  dpLoadDay();
+}
+
+async function dpLoadFeed() {
+  try {
+    const r = await fetch('/api/feed', { cache: 'no-store' });
+    const j = await r.json();
+    dpFeedPosts = j.posts || [];
+  } catch {
+    dpFeedPosts = [];
+  }
+  dpRenderFeed();
+}
+
+function dpRenderFeed() {
+  const el = document.getElementById('dp-posts');
+  if (!dpFeedPosts.length) {
+    el.innerHTML = '<div class="dp-empty">Nothing here yet.</div>';
+    return;
+  }
+  el.innerHTML = dpFeedPosts.map(p => {
+    let media = '';
+    if (p.mediaUrl && p.kind === 'video') {
+      media = `<video class="dp-post-media" src="${esc(p.mediaUrl)}" controls preload="metadata"></video>`;
+    } else if (p.mediaUrl) {
+      media = `<img class="dp-post-media" src="${esc(p.mediaUrl)}" alt="${esc(p.title || 'post')}" loading="lazy">`;
+    }
+    const title = p.title ? `<div style="font-size:var(--font-size-sm);font-weight:var(--font-weight-medium);color:var(--color-muted);margin-bottom:4px">${esc(p.title)}</div>` : '';
+    const body  = p.body  ? `<div class="dp-post-body">${esc(p.body)}</div>` : '';
+    return `<div class="dp-post">
+      ${title}${body}${media}
+      <div class="dp-post-time">${dpFormatTime(p.createdAt)}</div>
+    </div>`;
+  }).join('');
+}
+
+function dpToggleComposer() {
+  const c = document.getElementById('dp-composer');
+  c.classList.toggle('open');
+  if (!c.classList.contains('open')) {
+    document.getElementById('dp-post-body').value = '';
+    document.getElementById('dp-post-file').value = '';
+  }
+}
+
+async function dpSubmitPost() {
+  if (!adminOn) return;
+  const kind = document.getElementById('dp-post-kind').value;
+  const body = document.getElementById('dp-post-body').value.trim();
+  const file = document.getElementById('dp-post-file').files[0];
+  if (!body && !file) { toast('Add text or media'); return; }
+
+  const btn = document.getElementById('dp-post-submit');
+  btn.textContent = 'Posting…'; btn.disabled = true;
+
+  try {
+    let mediaUrl = null;
+    if (file) {
+      const fd = new FormData();
+      fd.append('file', file);
+      const up = await fetch('/api/feed/upload', { method: 'POST', body: fd });
+      if (!up.ok) throw new Error('Upload failed');
+      const j = await up.json();
+      mediaUrl = j.url;
+    }
+    const r = await fetch('/api/feed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind, title: '', body, mediaUrl }),
+    });
+    if (!r.ok) throw new Error('Post failed');
+    toast('Posted', true);
+    dpToggleComposer();
+    dpLoadFeed();
+  } catch (err) {
+    toast(err.message || 'Failed');
+  } finally {
+    btn.textContent = 'Post'; btn.disabled = false;
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 // BOOT
