@@ -115,22 +115,7 @@ export default function AdminClient() {
         </button>
       </div>
 
-      {toast && <div className={`pd-toast show ${toast.error ? 'error' : ''}`}>{toast.msg}</div>}
-
-      <style jsx>{`
-        .composer { padding-bottom: var(--space-xl); }
-        .actions {
-          display: flex; justify-content: flex-end; gap: var(--space-sm);
-          margin-top: var(--space-lg);
-          padding-top: var(--space-md);
-          border-top: 1px solid var(--color-border);
-        }
-        .file-name {
-          margin-top: 6px;
-          font-size: var(--font-size-xs);
-          color: var(--color-muted);
-        }
-      `}</style>
+      {toast && <div className={`pd-toast show ${toast.error ? 'error' : 'ok'}`}>{toast.msg}</div>}
     </form>
   )
 }
