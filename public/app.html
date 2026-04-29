@@ -422,7 +422,7 @@ nav.nav-hidden { transform: translateY(-100%); }
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-md) var(--space-lg);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
   position: sticky; top: 0; background: var(--color-bg); z-index: 10;
   border-radius: 24px 24px 0 0;
 }
@@ -434,7 +434,7 @@ nav.nav-hidden { transform: translateY(-100%); }
 .modal-nav { display: flex; gap: 2px; }
 .mnb {
   font-size: 16px; font-weight: var(--font-weight-medium);
-  background: var(--color-bg); border: 1px solid var(--color-border);
+  background: var(--color-bg); border: 2px solid var(--color-border);
   color: var(--color-muted); padding: 6px 16px; border-radius: var(--radius-pill);
   transition: all .12s;
 }
@@ -545,9 +545,9 @@ nav.nav-hidden { transform: translateY(-100%); }
 }
 .vote-row { display: flex; align-items: center; gap: var(--space-md); }
 .vote-btn {
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
-  background: var(--color-bg); border: 1px solid var(--color-border);
-  color: var(--color-muted); padding: 5px 14px; border-radius: var(--radius-pill);
+  font-size: 18px; font-weight: var(--font-weight-medium);
+  background: var(--color-bg); border: none;
+  color: var(--color-muted); padding: 4px 8px; border-radius: var(--radius-pill);
   cursor: pointer; transition: all .12s;
 }
 .vote-btn:hover, .vote-btn.on { color: var(--color-accent); border-color: var(--color-accent); background: var(--color-accent-bg); }
@@ -566,9 +566,9 @@ nav.nav-hidden { transform: translateY(-100%); }
 /* inputs — flat, no radius */
 .input {
   width: 100%; background: var(--color-bg);
-  border: 1px solid var(--color-border); color: var(--color-fg);
-  font-size: var(--font-size-sm); padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border); color: var(--color-fg);
+  font-size: var(--font-size-sm); padding: 10px 14px;
+  border-radius: var(--radius-md);
   outline: none; transition: border-color .15s;
 }
 .input:focus { border-color: var(--color-fg); }
