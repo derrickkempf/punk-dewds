@@ -1103,7 +1103,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
   <div style="display:flex;align-items:center;gap:var(--space-sm)">
     <button class="nav-pill nav-counter" onclick="toggleStats()"><span class="nav-dot"></span> <span id="nav-done">0</span>/10,000</button>
     <button class="nav-pill nav-daily-btn" id="nav-daily-btn" onclick="toggleDaily()"><span class="nav-daily-icon">📋</span> Daily</button>
-    <button class="nav-about-btn" onclick="openAbout()" title="About this project">?</button>
+    <button class="nav-about-btn" id="about-btn" onclick="openAbout()" title="About this project — long press for admin">?</button>
   </div>
   <div class="nav-progress" id="nav-progress" style="width:0%"></div>
 </nav>
@@ -2309,13 +2309,17 @@ async function chkAdminAuth() {
   const h  = await sha256(pw);
   if (h === HASH) {
     sessionStorage.setItem('pd-ok', '1');
-    // Also create a server-side admin cookie so /daily and /feed unlock too.
-    // Best-effort — we don't block the UI on it.
-    fetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: pw }),
-    }).catch(() => {});
+    // Create the server-side admin cookie — MUST succeed for daily/feed to work.
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw }),
+      });
+      if (!res.ok) console.warn('Admin cookie not set:', res.status);
+    } catch (err) {
+      console.warn('Admin cookie request failed:', err);
+    }
     document.getElementById('admin-auth-overlay').classList.remove('open');
     document.getElementById('admin-pw').value = '';
     document.getElementById('admin-auth-error').style.display = 'none';
@@ -2461,6 +2465,19 @@ function dpRenderTasks() {
   }).join('');
 }
 
+// Re-establish the server admin cookie using the cached sessionStorage flag
+async function dpEnsureCookie() {
+  // If we're admin locally but the cookie might be missing, re-login.
+  // The admin password isn't stored, so we use the /api/admin/login endpoint
+  // which was already called during chkAdminAuth. If the cookie expired
+  // mid-session we can't recover without the password — the user must re-auth.
+  try {
+    const r = await fetch('/api/admin/session', { cache: 'no-store' });
+    const j = await r.json();
+    return !!j.isAdmin;
+  } catch { return false; }
+}
+
 async function dpToggle(key) {
   if (!adminOn) { toast('Admin access required'); return; }
   const cur = dpDay[key] || { done: false, count: 0 };
@@ -2472,9 +2489,20 @@ async function dpToggle(key) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date: dpDate, day: dpDay }),
     });
-    if (!r.ok) { toast('Save failed'); dpLoadDay(); return; }
+    if (r.status === 401) {
+      toast('Session expired — use Ctrl+Shift+A to re-login');
+      dpLoadDay(); return;
+    }
+    if (!r.ok) {
+      const j = await r.json().catch(() => ({}));
+      toast(j.error || 'Save failed');
+      dpLoadDay(); return;
+    }
     toast('Saved', true);
-  } catch { toast('Save failed'); dpLoadDay(); }
+  } catch (err) {
+    toast('Network error — check connection');
+    dpLoadDay();
+  }
 }
 
 function dpShift(dir) {
@@ -2541,7 +2569,8 @@ async function dpSubmitPost() {
       const fd = new FormData();
       fd.append('file', file);
       const up = await fetch('/api/feed/upload', { method: 'POST', body: fd });
-      if (!up.ok) throw new Error('Upload failed');
+      if (up.status === 401) throw new Error('Session expired — re-login');
+      if (!up.ok) { const j = await up.json().catch(()=>({})); throw new Error(j.error || 'Upload failed'); }
       const j = await up.json();
       mediaUrl = j.url;
     }
@@ -2550,7 +2579,8 @@ async function dpSubmitPost() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ kind, title: '', body, mediaUrl }),
     });
-    if (!r.ok) throw new Error('Post failed');
+    if (r.status === 401) throw new Error('Session expired — re-login');
+    if (!r.ok) { const j = await r.json().catch(()=>({})); throw new Error(j.error || 'Post failed'); }
     toast('Posted', true);
     dpToggleComposer();
     dpLoadFeed();
@@ -2582,6 +2612,20 @@ doFilter();
       localStorage.removeItem('pd-user');
     }
   } catch {} // offline or API not available, use localStorage fallback
+})();
+
+// Long-press on ? button → admin login (mobile-friendly)
+(() => {
+  const btn = document.getElementById('about-btn');
+  let lpTimer = null;
+  const start = (e) => { lpTimer = setTimeout(() => { e.preventDefault(); adminClick(); }, 800); };
+  const cancel = () => { clearTimeout(lpTimer); };
+  btn.addEventListener('touchstart', start, { passive: false });
+  btn.addEventListener('touchend', cancel);
+  btn.addEventListener('touchmove', cancel);
+  btn.addEventListener('mousedown', start);
+  btn.addEventListener('mouseup', cancel);
+  btn.addEventListener('mouseleave', cancel);
 })();
 
 // URL param handlers
