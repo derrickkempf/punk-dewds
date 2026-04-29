@@ -795,7 +795,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 .nav-daily-btn.active {
   background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg);
 }
-.nav-daily-icon { font-size: 14px; line-height: 1; }
+.nav-daily-icon { width: 16px; height: 16px; flex-shrink: 0; }
 
 /* ═══════════════════════════════════════════════════════
    DAILY PANEL — slide-out right sidebar
@@ -820,9 +820,10 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
 .dp-close {
   position: absolute; top: var(--space-md); right: var(--space-md);
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-  font-size: 20px; color: var(--color-muted); cursor: pointer;
+  color: var(--color-muted); cursor: pointer;
   border: none; background: none; transition: color .12s; z-index: 10;
 }
+.dp-close svg { width: 14px; height: 14px; }
 .dp-close:hover { color: var(--color-fg); }
 
 .dp-inner { padding: var(--space-xl) var(--space-lg); }
@@ -883,18 +884,16 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
 }
 .dp-check {
   width: 28px; height: 28px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-bg);
-  font-size: 16px; font-weight: var(--font-weight-bold);
-  color: var(--color-bg);
+  border: none; border-radius: 0;
+  background: none;
+  color: var(--color-muted);
   transition: all .12s; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  padding: 0;
 }
-.dp-check:hover { border-color: var(--color-fg); }
-.dp-check.on {
-  background: var(--color-fg); border-color: var(--color-fg); color: var(--color-bg);
-}
+.dp-check svg { width: 24px; height: 24px; }
+.dp-check:hover { color: var(--color-fg); }
+.dp-check.on { color: var(--color-fg); }
 .dp-task-label {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
@@ -916,7 +915,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
   border-top: 1px solid var(--color-border);
 }
 .dp-feed-title-row { display: flex; align-items: center; gap: var(--space-sm); }
-.dp-feed-icon { font-size: 20px; line-height: 1; }
+.dp-feed-icon { width: 20px; height: 20px; flex-shrink: 0; color: var(--color-fg); }
 .dp-feed-title {
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
@@ -1102,7 +1101,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
   </div>
   <div style="display:flex;align-items:center;gap:var(--space-sm)">
     <button class="nav-pill nav-counter" onclick="toggleStats()"><span class="nav-dot"></span> <span id="nav-done">0</span>/10,000</button>
-    <button class="nav-pill nav-daily-btn" id="nav-daily-btn" onclick="toggleDaily()"><span class="nav-daily-icon">📋</span> Daily</button>
+    <button class="nav-pill nav-daily-btn" id="nav-daily-btn" onclick="toggleDaily()"><svg class="nav-daily-icon" viewBox="0 0 20.16 21.22" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M8.49,18.04h-4.24c-1.17,0-2.12-.95-2.12-2.12v-7.43h14.85v2.12c0,.59.47,1.06,1.06,1.06s1.06-.47,1.06-1.06v-4.24c0-2.34-1.9-4.24-4.24-4.24v-1.06c0-.59-.47-1.06-1.06-1.06s-1.06.47-1.06,1.06v1.06h-6.37v-1.06c0-.59-.47-1.06-1.06-1.06s-1.06.47-1.06,1.06v1.06C1.9,2.12,0,4.03,0,6.37v9.55c0,2.34,1.9,4.24,4.24,4.24h4.24c.59,0,1.06-.47,1.06-1.06s-.47-1.06-1.06-1.06ZM4.24,4.24h10.61c1.17,0,2.12.95,2.12,2.12H2.12c0-1.17.95-2.12,2.12-2.12Z"/><path d="M19.76,14.03c-.46-.37-1.12-.29-1.49.17l-3.5,4.38-1.28-1.28c-.41-.41-1.09-.41-1.5,0s-.41,1.09,0,1.5l2.12,2.12c.2.2.47.31.75.31.02,0,.04,0,.06,0,.3-.02.58-.16.77-.4l4.24-5.31c.37-.46.29-1.13-.17-1.49Z"/></svg> Daily</button>
     <button class="nav-about-btn" id="about-btn" onclick="openAbout()" title="About this project — long press for admin">?</button>
   </div>
   <div class="nav-progress" id="nav-progress" style="width:0%"></div>
@@ -1110,7 +1109,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
 
 <!-- DAILY + FEED PANEL (slide-out right sidebar) -->
 <div id="daily-panel">
-  <button class="dp-close" onclick="toggleDaily()" aria-label="Close">✕</button>
+  <button class="dp-close" onclick="toggleDaily()" aria-label="Close"><svg viewBox="0 0 16.12 16.48" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M1.52,16.48c-.43,0-.79-.15-1.08-.46-.29-.31-.44-.66-.44-1.06,0-.21.05-.43.14-.66s.23-.43.42-.62c.48-.64,1.1-1.36,1.86-2.16s1.62-1.69,2.58-2.68c.19-.19.28-.39.28-.6,0-.24-.08-.44-.24-.6-.99-1.01-1.87-1.92-2.64-2.72-.77-.8-1.41-1.52-1.92-2.16-.32-.43-.48-.84-.48-1.24S.15.77.44.46c.29-.31.65-.46,1.08-.46.45,0,.88.17,1.28.52.67.51,1.39,1.14,2.18,1.9.79.76,1.67,1.63,2.66,2.62.13.13.28.2.44.2.13,0,.27-.07.4-.2.99-.99,1.87-1.86,2.66-2.62.79-.76,1.5-1.39,2.14-1.9.43-.35.87-.52,1.32-.52.43,0,.79.15,1.08.46.29.31.44.66.44,1.06,0,.19-.05.39-.14.62s-.23.46-.42.7c-.45.61-1.07,1.31-1.84,2.1-.77.79-1.65,1.69-2.64,2.7-.19.16-.28.36-.28.6,0,.19.11.39.32.6.96.99,1.83,1.88,2.6,2.68s1.4,1.53,1.88,2.2c.16.21.28.43.36.64.08.21.12.41.12.6,0,.4-.14.75-.42,1.06-.28.31-.63.46-1.06.46-.21,0-.43-.05-.64-.14-.21-.09-.44-.23-.68-.42-.67-.51-1.38-1.13-2.14-1.88-.76-.75-1.63-1.6-2.62-2.56-.19-.16-.33-.24-.44-.24-.19,0-.35.08-.48.24-.96.96-1.83,1.81-2.6,2.56-.77.75-1.48,1.36-2.12,1.84-.45.4-.91.6-1.36.6Z"/></svg></button>
   <div class="dp-inner">
     <!-- Day strip -->
     <div class="dp-day-strip">
@@ -1130,7 +1129,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
     <div class="dp-feed-head">
       <div>
         <div class="dp-feed-title-row">
-          <span class="dp-feed-icon">📋</span>
+          <svg class="dp-feed-icon" viewBox="0 0 20.99 19.14" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M15.81,2.13H5.18c-.59,0-1.06-.48-1.06-1.06s.48-1.06,1.06-1.06h10.63c.59,0,1.06.48,1.06,1.06s-.48,1.06-1.06,1.06Z"/><path d="M17.94,5.85H3.05c-.59,0-1.06-.48-1.06-1.06s.48-1.06,1.06-1.06h14.89c.59,0,1.06.48,1.06,1.06s-.48,1.06-1.06,1.06Z"/><path d="M15.51,19.14H5.48c-1.9,0-3.59-1.28-4.1-3.12L.12,11.49c-.27-.97-.07-1.98.53-2.78s1.53-1.26,2.54-1.26h14.61c1.01,0,1.93.46,2.54,1.26s.8,1.82.53,2.78l-1.26,4.54c-.51,1.83-2.2,3.12-4.1,3.12ZM3.19,9.57c-.34,0-.64.15-.85.42-.2.27-.27.6-.18.93l1.26,4.54c.25.92,1.1,1.56,2.05,1.56h10.04c.95,0,1.79-.64,2.05-1.56l1.26-4.54c.09-.32.03-.66-.18-.93-.2-.27-.51-.42-.85-.42H3.19Z"/></svg>
           <span class="dp-feed-title">Feed</span>
         </div>
         <div class="dp-feed-sub">Sketches, videos, and posts on the daily practice.</div>
@@ -1378,6 +1377,7 @@ async function authSendCode() {
   try {
     const res = await fetch('/api/auth/send-code', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
     });
@@ -1425,6 +1425,7 @@ async function authVerifyCode() {
   try {
     const res = await fetch('/api/auth/verify', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: pendingEmail, code: entered })
     });
@@ -1461,7 +1462,7 @@ function authBackToEmail() {
 }
 
 async function signOut() {
-  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+  await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => {});
   currentUser = null;
   localStorage.removeItem('pd-user');
   toast('Signed out');
@@ -1871,6 +1872,7 @@ function readArt(file, id) {
         toast('Optimizing SVG…');
         const resp = await fetch('/api/optimize', {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ svg: rawSvg }),
         });
@@ -2313,6 +2315,7 @@ async function chkAdminAuth() {
     try {
       const res = await fetch('/api/admin/login', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password: pw }),
       });
@@ -2344,7 +2347,7 @@ function exitAdmin() {
   adminOn = false;
   sessionStorage.removeItem('pd-ok');
   // Also clear the server-side admin cookie so /daily and /feed re-lock.
-  fetch('/api/admin/login', { method: 'DELETE' }).catch(() => {});
+  fetch('/api/admin/login', { method: 'DELETE', credentials: 'include' }).catch(() => {});
   document.getElementById('admin-panel').classList.remove('open');
   document.getElementById('dp-new-post').style.display = 'none';
   document.getElementById('dp-composer').classList.remove('open');
@@ -2444,7 +2447,7 @@ async function dpLoadDay() {
   document.getElementById('dp-next').disabled = isToday;
 
   try {
-    const r = await fetch(`/api/daily?date=${dpDate}`, { cache: 'no-store' });
+    const r = await fetch(`/api/daily?date=${dpDate}`, { cache: 'no-store', credentials: 'include' });
     const j = await r.json();
     dpDay = j.day || { drawing:{done:false,count:0}, pushups:{done:false,count:0}, crunches:{done:false,count:0} };
   } catch {
@@ -2453,13 +2456,16 @@ async function dpLoadDay() {
   dpRenderTasks();
 }
 
+const SVG_BOX_CHECKED = `<svg viewBox="0 0 18 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.96,3.75c-.05-.56-.14-1.08-.39-1.57-.38-.75-1-1.36-1.75-1.75-.48-.25-1-.35-1.56-.39-.55-.05-1.23-.05-2.05-.05h-6.4c-.82,0-1.5,0-2.05.05-.56.05-1.08.14-1.56.39-.75.38-1.36,1-1.75,1.75-.25.49-.35,1-.39,1.57-.04.55-.04,1.23-.04,2.05v6.4c0,.82,0,1.5.04,2.05.05.56.15,1.08.39,1.56.38.75,1,1.36,1.75,1.75.49.25,1,.35,1.56.39.55.05,1.23.04,2.05.04h6.4c.82,0,1.5,0,2.05-.04.56-.05,1.08-.14,1.56-.39.75-.38,1.36-1,1.75-1.75.25-.49.35-1,.39-1.56.04-.55.04-1.23.04-2.05v-6.4c0-.82,0-1.5-.04-2.05ZM15.96,14.09c-.04.44-.1.66-.18.82-.19.38-.5.68-.87.87-.16.08-.38.15-.82.18-.45.04-1.03.04-1.89.04h-6.4c-.86,0-1.44,0-1.89-.04-.44-.04-.66-.1-.82-.18-.38-.19-.68-.5-.87-.87-.08-.16-.14-.38-.18-.82-.04-.45-.04-1.03-.04-1.89v-6.4c0-.86,0-1.44.04-1.89.04-.44.1-.66.18-.82.19-.38.5-.68.87-.87.16-.08.38-.14.82-.18.45-.04,1.03-.04,1.89-.04h6.4c.86,0,1.44,0,1.89.04.44.04.66.1.82.18.38.19.68.5.87.87.08.16.15.38.18.82.04.45.04,1.03.04,1.89v6.4c0,.86,0,1.44-.04,1.89Z"/><path d="M11.79,6.04l-3.79,3.79-1.29-1.29c-.39-.39-1.02-.39-1.41,0-.39.39-.39,1.02,0,1.41l2,2c.19.19.44.29.71.29s.52-.1.71-.29l4.5-4.5c.39-.39.39-1.02,0-1.41-.39-.39-1.02-.39-1.41,0Z"/></svg>`;
+const SVG_BOX_EMPTY = `<svg viewBox="0 0 18 18" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12.2,18h-6.4c-1.84,0-2.76,0-3.62-.43-.76-.39-1.36-.99-1.75-1.75-.44-.86-.44-1.78-.44-3.62v-6.4c0-1.84,0-2.76.44-3.62.39-.76.99-1.36,1.75-1.75.86-.44,1.78-.44,3.62-.44h6.4c1.84,0,2.76,0,3.62.44.76.39,1.36.99,1.75,1.75.44.86.44,1.78.44,3.62v6.4c0,1.84,0,2.76-.44,3.62-.39.76-.99,1.36-1.75,1.75-.86.44-1.78.44-3.62.44ZM5.8,2c-1.47,0-2.28,0-2.71.22-.38.19-.68.49-.87.87-.22.43-.22,1.24-.22,2.71v6.4c0,1.47,0,2.28.22,2.71.19.38.5.68.87.88.43.22,1.24.22,2.71.22h6.4c1.47,0,2.28,0,2.71-.22.38-.19.68-.5.87-.87.22-.43.22-1.24.22-2.71v-6.4c0-1.47,0-2.28-.22-2.71-.19-.38-.5-.68-.87-.87-.43-.22-1.24-.22-2.71-.22h-6.4Z"/></svg>`;
+
 function dpRenderTasks() {
   const el = document.getElementById('dp-tasks');
   el.innerHTML = DP_ACTIVITIES.map((a, i) => {
     const v = dpDay[a.key] || { done: false, count: 0 };
     return `<li class="dp-task ${v.done ? 'done' : ''}">
       <span class="dp-task-num">${i+1}.</span>
-      <button class="dp-check ${v.done ? 'on' : ''}" onclick="dpToggle('${a.key}')">${v.done ? '✓' : ''}</button>
+      <button class="dp-check ${v.done ? 'on' : ''}" onclick="dpToggle('${a.key}')">${v.done ? SVG_BOX_CHECKED : SVG_BOX_EMPTY}</button>
       <span class="dp-task-label">${a.label}</span>
     </li>`;
   }).join('');
@@ -2472,7 +2478,7 @@ async function dpEnsureCookie() {
   // which was already called during chkAdminAuth. If the cookie expired
   // mid-session we can't recover without the password — the user must re-auth.
   try {
-    const r = await fetch('/api/admin/session', { cache: 'no-store' });
+    const r = await fetch('/api/admin/session', { cache: 'no-store', credentials: 'include' });
     const j = await r.json();
     return !!j.isAdmin;
   } catch { return false; }
@@ -2486,6 +2492,7 @@ async function dpToggle(key) {
   try {
     const r = await fetch('/api/daily', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ date: dpDate, day: dpDay }),
     });
@@ -2513,7 +2520,7 @@ function dpShift(dir) {
 
 async function dpLoadFeed() {
   try {
-    const r = await fetch('/api/feed', { cache: 'no-store' });
+    const r = await fetch('/api/feed', { cache: 'no-store', credentials: 'include' });
     const j = await r.json();
     dpFeedPosts = j.posts || [];
   } catch {
@@ -2568,7 +2575,7 @@ async function dpSubmitPost() {
     if (file) {
       const fd = new FormData();
       fd.append('file', file);
-      const up = await fetch('/api/feed/upload', { method: 'POST', body: fd });
+      const up = await fetch('/api/feed/upload', { method: 'POST', credentials: 'include', body: fd });
       if (up.status === 401) throw new Error('Session expired — re-login');
       if (!up.ok) { const j = await up.json().catch(()=>({})); throw new Error(j.error || 'Upload failed'); }
       const j = await up.json();
@@ -2576,6 +2583,7 @@ async function dpSubmitPost() {
     }
     const r = await fetch('/api/feed', {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ kind, title: '', body, mediaUrl }),
     });
@@ -2601,7 +2609,7 @@ doFilter();
 // Sync session with server on load
 (async () => {
   try {
-    const res = await fetch('/api/auth/session');
+    const res = await fetch('/api/auth/session', { credentials: 'include' });
     const data = await res.json();
     if (data.user) {
       currentUser = { email: data.user.email, since: Date.now() };
