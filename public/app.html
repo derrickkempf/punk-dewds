@@ -107,7 +107,7 @@ nav.nav-hidden { transform: translateY(-100%); }
   padding: var(--space-sm) 0 0;
 }
 .nav-top-row .nav-counter {
-  font-size: 11px; padding: 6px 14px;
+  width: 100%; font-size: 11px; padding: 6px 14px;
 }
 .nav-main-row {
   display: flex; align-items: center; justify-content: space-between;
@@ -153,8 +153,8 @@ nav.nav-hidden { transform: translateY(-100%); }
 .nav-about-btn {
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--color-border); border-radius: 50%;
-  font-size: 14px; font-weight: var(--font-weight-medium);
+  border: 2px solid var(--color-border); border-radius: 50%;
+  font-size: 14px; font-weight: var(--font-weight-bold);
   color: var(--color-muted); cursor: pointer; transition: all .12s;
   background: var(--color-bg);
 }
@@ -808,7 +808,7 @@ textarea.input { resize: vertical; min-height: 60px; }
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: .4; transform: scale(.7); }
 }
-.nav-counter { font-variant-numeric: tabular-nums; }
+.nav-counter { font-variant-numeric: tabular-nums; font-size: 11px; padding: 6px 14px;}
 .nav-daily-btn {
   display: inline-flex; align-items: center; gap: 4px;
 }
