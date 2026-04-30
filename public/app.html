@@ -587,15 +587,15 @@ nav.nav-hidden { transform: translateY(-100%); }
 .input::placeholder { color: var(--color-muted); }
 textarea.input { resize: vertical; min-height: 60px; }
 .btn-primary {
-  font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md); font-weight: var(--font-weight-bold);
   background: var(--color-fg); color: var(--color-bg); border: none;
   padding: 8px 18px; border-radius: var(--radius-pill);
   cursor: pointer; transition: opacity .12s;
 }
 .btn-primary:hover { opacity: .8; }
 .btn-secondary {
-  font-size: var(--font-size-xs); font-weight: var(--font-weight-medium);
-  background: var(--color-bg); border: 1px solid var(--color-border);
+  font-size: var(--font-size-md); font-weight: var(--font-weight-medium);
+  background: var(--color-bg); border: 2px solid var(--color-border);
   color: var(--color-muted); padding: 6px 14px; border-radius: var(--radius-pill);
   cursor: pointer; transition: all .12s;
 }
@@ -725,7 +725,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 }
 .dropzone {
   display: block; width: 100%;
-  border: 1px dashed var(--color-border); border-radius: var(--radius-md);
+  border: 3px dashed var(--color-border); border-radius: 18px;
   padding: var(--space-lg); text-align: center;
   cursor: pointer; transition: all .15s; margin-bottom: var(--space-md);
   font-size: var(--font-size-xs); color: var(--color-muted);
@@ -740,8 +740,8 @@ textarea.input { resize: vertical; min-height: 60px; }
 }
 .admin-field input, .admin-field select {
   font-size: var(--font-size-sm); background: var(--color-bg);
-  border: 1px solid var(--color-border); color: var(--color-fg);
-  padding: 6px 10px; border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border); color: var(--color-fg);
+  padding: 8px 12px; border-radius: var(--radius-sm);
   outline: none; transition: border-color .15s;
 }
 .admin-field input:focus, .admin-field select:focus { border-color: var(--color-fg); }
@@ -769,7 +769,7 @@ textarea.input { resize: vertical; min-height: 60px; }
 }
 .gc-dropzone {
   display: block; width: 100%;
-  border: 1px dashed var(--color-border); border-radius: var(--radius-md);
+  border: 3px dashed var(--color-border); border-radius: 18px;
   padding: var(--space-lg); text-align: center;
   cursor: pointer; transition: all .15s; margin-bottom: var(--space-md);
   font-size: var(--font-size-xs); color: var(--color-muted);
