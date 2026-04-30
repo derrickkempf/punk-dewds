@@ -794,14 +794,36 @@ textarea.input { resize: vertical; min-height: 60px; }
 }
 .gc-thumb {
   position: relative; border-radius: 4px; overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-border); cursor: pointer;
+  opacity: .5; transition: all .12s;
 }
+.gc-thumb.selected { border-color: var(--color-fg); opacity: 1; }
 .gc-thumb img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.gc-thumb-check {
+  position: absolute; top: 4px; right: 4px;
+  width: 18px; height: 18px; color: var(--color-muted);
+  pointer-events: none;
+}
+.gc-thumb.selected .gc-thumb-check { color: var(--color-fg); }
 .gc-thumb-label {
   position: absolute; bottom: 0; left: 0; right: 0;
   background: rgba(0,0,0,.6); color: #fff;
   font-size: 8px; text-align: center; padding: 1px 0;
   font-weight: var(--font-weight-medium);
+}
+.gc-select-actions {
+  display: flex; gap: var(--space-sm); margin-bottom: var(--space-sm);
+}
+.gc-select-actions button {
+  font-size: 10px; font-weight: var(--font-weight-medium);
+  padding: 4px 10px; border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); background: var(--color-bg);
+  color: var(--color-fg); cursor: pointer; transition: all .12s;
+}
+.gc-select-actions button:hover { border-color: var(--color-fg); }
+.gc-select-count {
+  font-size: 10px; color: var(--color-muted);
+  display: flex; align-items: center;
 }
 .gc-status {
   font-size: var(--font-size-xs); color: var(--color-muted);
@@ -1333,7 +1355,7 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
       </div>
       <button class="btn-primary" id="gc-crop-btn" onclick="gcCrop()" disabled>Crop & Preview</button>
       <button class="btn-primary" id="gc-zip-btn" onclick="gcDownloadZip()" disabled style="background:var(--color-accent);border-color:var(--color-accent)">Download ZIP</button>
-      <button class="btn-secondary" id="gc-upload-btn" onclick="gcUploadAll()" disabled>Upload All to App</button>
+      <button class="btn-secondary" id="gc-upload-btn" onclick="gcUploadAll()" disabled>Upload Selected to App</button>
     </div>
 
     <div id="gc-status" class="gc-status" style="display:none"></div>
@@ -1341,6 +1363,11 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
       <img id="gc-preview-img" src="" alt="Sheet preview">
       <div class="gc-grid-overlay" id="gc-overlay"></div>
       <canvas id="gc-canvas" style="display:none"></canvas>
+    </div>
+    <div id="gc-select-bar" class="gc-select-actions" style="display:none">
+      <button onclick="gcSelectAll()">Select All</button>
+      <button onclick="gcSelectNone()">Select None</button>
+      <span id="gc-select-count" class="gc-select-count"></span>
     </div>
     <div id="gc-thumbs" class="gc-thumbs"></div>
   </div>
@@ -2770,6 +2797,7 @@ function gcLoadFile(file) {
       document.getElementById('gc-zip-btn').disabled = true;
       document.getElementById('gc-upload-btn').disabled = true;
       document.getElementById('gc-thumbs').innerHTML = '';
+      document.getElementById('gc-select-bar').style.display = 'none';
       gcTiles = [];
       gcDrawOverlay();
       gcSetStatus(`Loaded: ${img.naturalWidth}×${img.naturalHeight}px — click "Crop & Preview"`);
@@ -2834,10 +2862,14 @@ async function gcCrop() {
 
       gcTiles.push({ blob, filename, dataUrl });
 
-      // Build thumbnail
+      // Build thumbnail with selection
       const thumb = document.createElement('div');
-      thumb.className = 'gc-thumb';
-      thumb.innerHTML = `<img src="${dataUrl}" alt="${filename}"><div class="gc-thumb-label">${filename}</div>`;
+      thumb.className = 'gc-thumb selected';
+      thumb.dataset.idx = idx;
+      thumb.onclick = () => gcToggleThumb(thumb);
+      thumb.innerHTML = `<img src="${dataUrl}" alt="${filename}">`
+        + `<svg class="gc-thumb-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="18" height="18" rx="4" stroke="currentColor" stroke-width="2"/><path d="M6 10l3 3 5-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+        + `<div class="gc-thumb-label">${filename}</div>`;
       thumbsEl.appendChild(thumb);
     }
     // Yield to UI every row
@@ -2846,14 +2878,17 @@ async function gcCrop() {
 
   document.getElementById('gc-zip-btn').disabled = false;
   document.getElementById('gc-upload-btn').disabled = false;
-  gcSetStatus(`${total} tiles ready — download ZIP or upload to app.`);
+  document.getElementById('gc-select-bar').style.display = 'flex';
+  gcUpdateSelectCount();
 }
 
 async function gcDownloadZip() {
   if (!gcTiles.length) return;
-  gcSetStatus('Building ZIP…');
+  const selected = gcGetSelected();
+  if (!selected.length) { gcSetStatus('No tiles selected.'); return; }
+  gcSetStatus(`Building ZIP (${selected.length} tiles)…`);
   const zip = new JSZip();
-  for (const tile of gcTiles) {
+  for (const tile of selected) {
     zip.file(tile.filename, tile.blob);
   }
   const content = await zip.generateAsync({ type: 'blob' });
@@ -2865,19 +2900,21 @@ async function gcDownloadZip() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  gcSetStatus('ZIP downloaded.');
+  gcSetStatus(`ZIP downloaded (${selected.length} tiles).`);
 }
 
 async function gcUploadAll() {
   if (!gcTiles.length || !adminOn) return;
+  const selected = gcGetSelected();
+  if (!selected.length) { gcSetStatus('No tiles selected.'); return; }
   const btn = document.getElementById('gc-upload-btn');
   btn.disabled = true;
   btn.textContent = 'Uploading…';
   let ok = 0, fail = 0;
 
-  for (const tile of gcTiles) {
+  for (const tile of selected) {
     try {
-      gcSetStatus(`Uploading ${tile.filename}… (${ok + fail + 1}/${gcTiles.length})`);
+      gcSetStatus(`Uploading ${tile.filename}… (${ok + fail + 1}/${selected.length})`);
       const fd = new FormData();
       fd.append('file', new File([tile.blob], tile.filename, { type: 'image/png' }));
       const r = await fetch('/api/feed/upload', { method: 'POST', credentials: 'include', body: fd });
@@ -2887,7 +2924,7 @@ async function gcUploadAll() {
     }
   }
 
-  btn.textContent = 'Upload All to App';
+  btn.textContent = 'Upload Selected to App';
   btn.disabled = false;
   gcSetStatus(`Done — ${ok} uploaded, ${fail} failed.`);
   if (ok > 0) toast(`${ok} tiles uploaded`, true);
@@ -2897,6 +2934,34 @@ function gcSetStatus(msg) {
   const el = document.getElementById('gc-status');
   el.style.display = 'block';
   el.textContent = msg;
+}
+
+function gcToggleThumb(el) {
+  el.classList.toggle('selected');
+  gcUpdateSelectCount();
+}
+
+function gcSelectAll() {
+  document.querySelectorAll('.gc-thumb').forEach(t => t.classList.add('selected'));
+  gcUpdateSelectCount();
+}
+
+function gcSelectNone() {
+  document.querySelectorAll('.gc-thumb').forEach(t => t.classList.remove('selected'));
+  gcUpdateSelectCount();
+}
+
+function gcUpdateSelectCount() {
+  const total = document.querySelectorAll('.gc-thumb').length;
+  const sel = document.querySelectorAll('.gc-thumb.selected').length;
+  document.getElementById('gc-select-count').textContent = `${sel} of ${total} selected`;
+  gcSetStatus(`${sel} of ${total} tiles selected — download ZIP or upload to app.`);
+}
+
+function gcGetSelected() {
+  const selectedEls = document.querySelectorAll('.gc-thumb.selected');
+  const indices = new Set([...selectedEls].map(el => parseInt(el.dataset.idx)));
+  return gcTiles.filter((_, i) => indices.has(i));
 }
 
 // Re-draw overlay when cols/rows change
