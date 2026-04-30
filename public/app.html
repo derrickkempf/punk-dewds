@@ -1673,24 +1673,46 @@ document.addEventListener('DOMContentLoaded', () => {
 // ═══════════════════════════════════════════════════════
 // STORAGE
 // ═══════════════════════════════════════════════════════
-function loadPunks() {
-  const raw = localStorage.getItem('pd-v2');
-  const saved = raw ? JSON.parse(raw) : {};
+function applyPunkData(saved) {
   punks = Array.from({ length: TOTAL }, (_, i) => {
-    const d = saved[i] || {};
+    const d = saved[i] || saved[String(i)] || {};
     return {
       id: i, status: d.status || 'not-started',
       art: d.art || null, ipfs: d.ipfs || '',
       votes: d.votes || 0, votedBy: d.votedBy || [],
       comments: d.comments || [],
       optimizedSvg: d.optimizedSvg || null,
-      mintStatus: d.mintStatus || 'none', // none | waiting | minted
+      mintStatus: d.mintStatus || 'none',
       tokenId: d.tokenId ?? null,
     };
   });
 }
 
-function save() {
+function loadPunks() {
+  const raw = localStorage.getItem('pd-v2');
+  const saved = raw ? JSON.parse(raw) : {};
+  applyPunkData(saved);
+}
+
+async function loadPunksFromServer() {
+  try {
+    const r = await fetch('/api/punks', { cache: 'no-store', credentials: 'include' });
+    if (r.ok) {
+      const server = await r.json();
+      if (server && Object.keys(server).length) {
+        applyPunkData(server);
+        // Also update localStorage so it stays in sync
+        savePunksLocal();
+        doStats(); doFilter();
+        console.log('[punks] loaded from server:', Object.keys(server).length, 'entries');
+      }
+    }
+  } catch (e) {
+    console.warn('[punks] server load failed, using localStorage:', e.message);
+  }
+}
+
+function buildPunkPayload() {
   const out = {};
   punks.forEach(p => {
     if (p.status !== 'not-started' || p.art || p.ipfs || p.votes || p.comments.length || p.optimizedSvg || p.mintStatus !== 'none') {
@@ -1701,8 +1723,27 @@ function save() {
       out[p.id] = entry;
     }
   });
+  return out;
+}
+
+function savePunksLocal() {
+  try { localStorage.setItem('pd-v2', JSON.stringify(buildPunkPayload())); }
+  catch(e) { toast('Storage full — export first!'); }
+}
+
+function save() {
+  const out = buildPunkPayload();
+  // Always save to localStorage
   try { localStorage.setItem('pd-v2', JSON.stringify(out)); }
   catch(e) { toast('Storage full — export first!'); }
+  // If admin, also sync to server
+  if (adminOn) {
+    fetch('/api/punks', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(out),
+    }).catch(e => console.warn('[punks] server save failed:', e.message));
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2984,6 +3025,8 @@ document.getElementById('gc-rows').addEventListener('change', gcDrawOverlay);
 loadPunks();
 doStats();
 doFilter();
+// Load server punk data (overrides localStorage with latest server state)
+loadPunksFromServer();
 
 // Sync session with server on load
 (async () => {
