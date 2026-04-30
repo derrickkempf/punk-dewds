@@ -2914,20 +2914,30 @@ async function gcUploadAll() {
 
   for (const tile of selected) {
     try {
+      const punkId = parseInt(tile.filename.replace('.png', ''), 10);
       gcSetStatus(`Uploading ${tile.filename}… (${ok + fail + 1}/${selected.length})`);
       const fd = new FormData();
       fd.append('file', new File([tile.blob], tile.filename, { type: 'image/png' }));
       const r = await fetch('/api/feed/upload', { method: 'POST', credentials: 'include', body: fd });
-      if (r.ok) ok++; else fail++;
+      if (r.ok) {
+        const data = await r.json();
+        // Assign the uploaded image URL to the matching punk
+        if (punks[punkId]) {
+          punks[punkId].art = data.url;
+          punks[punkId].status = 'done';
+        }
+        ok++;
+      } else fail++;
     } catch {
       fail++;
     }
   }
 
+  if (ok > 0) { save(); doStats(); doFilter(); }
   btn.textContent = 'Upload Selected to App';
   btn.disabled = false;
   gcSetStatus(`Done — ${ok} uploaded, ${fail} failed.`);
-  if (ok > 0) toast(`${ok} tiles uploaded`, true);
+  if (ok > 0) toast(`${ok} tiles uploaded & linked to punks`, true);
 }
 
 function gcSetStatus(msg) {
