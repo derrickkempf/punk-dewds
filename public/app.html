@@ -31,6 +31,7 @@
 
 <script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.10/dist/dotlottie-wc.js" type="module"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════
    CSS CUSTOM PROPERTIES — single source of truth
@@ -715,7 +716,7 @@ textarea.input { resize: vertical; min-height: 60px; }
   padding: 0; max-height: 0; overflow: hidden;
   transition: max-height .25s ease, padding .25s ease;
 }
-#admin-panel.open { max-height: 420px; padding: var(--space-md) var(--space-lg); }
+#admin-panel.open { max-height: 2000px; padding: var(--space-md) var(--space-lg); overflow-y: auto; }
 .admin-header {
   font-size: 9px; font-weight: var(--font-weight-medium);
   color: var(--color-muted); letter-spacing: .08em; text-transform: uppercase;
@@ -748,6 +749,64 @@ textarea.input { resize: vertical; min-height: 60px; }
 #admin-preview img { height: 56px; border: 1px solid var(--color-border); }
 #admin-preview-info { font-size: var(--font-size-xs); color: var(--color-muted); }
 #admin-preview-name { color: var(--color-fg); display: block; font-weight: var(--font-weight-medium); }
+
+/* ═══════════════════════════════════════════════════════
+   GRID CROPPER — batch crop tool inside admin panel
+   ═══════════════════════════════════════════════════════ */
+.gc-section {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+}
+.gc-title {
+  font-size: 9px; font-weight: var(--font-weight-medium);
+  color: var(--color-muted); letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: var(--space-md);
+}
+.gc-controls {
+  display: flex; gap: var(--space-sm); flex-wrap: wrap; align-items: flex-end;
+  margin-bottom: var(--space-md);
+}
+.gc-dropzone {
+  display: block; width: 100%;
+  border: 1px dashed var(--color-border); border-radius: var(--radius-md);
+  padding: var(--space-lg); text-align: center;
+  cursor: pointer; transition: all .15s; margin-bottom: var(--space-md);
+  font-size: var(--font-size-xs); color: var(--color-muted);
+}
+.gc-dropzone.over { border-color: var(--color-fg); color: var(--color-fg); }
+.gc-dropzone small { display: block; font-size: 9px; margin-top: 3px; color: var(--color-muted); }
+.gc-preview-wrap {
+  position: relative; margin-bottom: var(--space-md);
+  max-width: 100%; overflow: hidden; border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+.gc-preview-wrap img { display: block; width: 100%; height: auto; }
+.gc-preview-wrap canvas { display: none; }
+.gc-grid-overlay {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.gc-grid-overlay svg { width: 100%; height: 100%; }
+.gc-thumbs {
+  display: grid; grid-template-columns: repeat(8, 1fr);
+  gap: 2px; margin-bottom: var(--space-md);
+}
+.gc-thumb {
+  position: relative; border-radius: 4px; overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+.gc-thumb img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.gc-thumb-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,.6); color: #fff;
+  font-size: 8px; text-align: center; padding: 1px 0;
+  font-weight: var(--font-weight-medium);
+}
+.gc-status {
+  font-size: var(--font-size-xs); color: var(--color-muted);
+  margin-bottom: var(--space-sm);
+}
 
 /* modal upload zone */
 .modal-dropzone {
@@ -1244,6 +1303,46 @@ body.daily-open .site-footer { margin-right: 50vw; transition: margin-right .3s 
     <button class="btn-secondary" onclick="exportJ()">Export</button>
     <button class="btn-secondary" onclick="document.getElementById('import-file').click()">Import</button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJ(event)">
+  </div>
+
+  <!-- GRID CROPPER -->
+  <div class="gc-section">
+    <div class="gc-title">Batch Grid Cropper — 12×9 in sheet → 48 squares</div>
+    <div class="gc-dropzone" id="gc-dropzone"
+      ondragover="event.preventDefault();this.classList.add('over')"
+      ondragleave="this.classList.remove('over')"
+      ondrop="event.preventDefault();this.classList.remove('over');gcLoadFile(event.dataTransfer.files[0])"
+      onclick="document.getElementById('gc-file').click()">
+      Drop a 12×9 sheet image here, or click to browse
+      <small>PNG, JPG, or TIFF · will be split into 8×6 grid (48 squares)</small>
+    </div>
+    <input type="file" id="gc-file" accept="image/*" style="display:none" onchange="gcLoadFile(this.files[0])">
+
+    <div class="gc-controls">
+      <div class="admin-field">
+        <label>Start #</label>
+        <input type="number" id="gc-start" min="0" max="9999" value="0" placeholder="0" style="width:90px">
+      </div>
+      <div class="admin-field">
+        <label>Columns</label>
+        <input type="number" id="gc-cols" min="1" max="20" value="8" style="width:60px">
+      </div>
+      <div class="admin-field">
+        <label>Rows</label>
+        <input type="number" id="gc-rows" min="1" max="20" value="6" style="width:60px">
+      </div>
+      <button class="btn-primary" id="gc-crop-btn" onclick="gcCrop()" disabled>Crop & Preview</button>
+      <button class="btn-primary" id="gc-zip-btn" onclick="gcDownloadZip()" disabled style="background:var(--color-accent);border-color:var(--color-accent)">Download ZIP</button>
+      <button class="btn-secondary" id="gc-upload-btn" onclick="gcUploadAll()" disabled>Upload All to App</button>
+    </div>
+
+    <div id="gc-status" class="gc-status" style="display:none"></div>
+    <div id="gc-preview" class="gc-preview-wrap" style="display:none">
+      <img id="gc-preview-img" src="" alt="Sheet preview">
+      <div class="gc-grid-overlay" id="gc-overlay"></div>
+      <canvas id="gc-canvas" style="display:none"></canvas>
+    </div>
+    <div id="gc-thumbs" class="gc-thumbs"></div>
   </div>
 </div>
 
@@ -2651,6 +2750,158 @@ async function dpSubmitPost() {
     btn.textContent = 'Post'; btn.disabled = false;
   }
 }
+
+// ═══════════════════════════════════════════════════════
+// GRID CROPPER — batch crop 12×9 sheet into 48 squares
+// ═══════════════════════════════════════════════════════
+let gcImage = null;    // loaded Image element
+let gcTiles = [];      // array of { blob, filename, dataUrl }
+
+function gcLoadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      gcImage = img;
+      document.getElementById('gc-preview').style.display = 'block';
+      document.getElementById('gc-preview-img').src = e.target.result;
+      document.getElementById('gc-crop-btn').disabled = false;
+      document.getElementById('gc-zip-btn').disabled = true;
+      document.getElementById('gc-upload-btn').disabled = true;
+      document.getElementById('gc-thumbs').innerHTML = '';
+      gcTiles = [];
+      gcDrawOverlay();
+      gcSetStatus(`Loaded: ${img.naturalWidth}×${img.naturalHeight}px — click "Crop & Preview"`);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function gcDrawOverlay() {
+  const cols = parseInt(document.getElementById('gc-cols').value) || 8;
+  const rows = parseInt(document.getElementById('gc-rows').value) || 6;
+  const el = document.getElementById('gc-overlay');
+  let lines = '';
+  // Vertical lines
+  for (let c = 1; c < cols; c++) {
+    const x = (c / cols * 100).toFixed(4);
+    lines += `<line x1="${x}%" y1="0" x2="${x}%" y2="100%" stroke="rgba(234,52,176,.6)" stroke-width="1"/>`;
+  }
+  // Horizontal lines
+  for (let r = 1; r < rows; r++) {
+    const y = (r / rows * 100).toFixed(4);
+    lines += `<line x1="0" y1="${y}%" x2="100%" y2="${y}%" stroke="rgba(234,52,176,.6)" stroke-width="1"/>`;
+  }
+  el.innerHTML = `<svg viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">${lines}</svg>`;
+}
+
+async function gcCrop() {
+  if (!gcImage) return;
+  const cols = parseInt(document.getElementById('gc-cols').value) || 8;
+  const rows = parseInt(document.getElementById('gc-rows').value) || 6;
+  const startNum = parseInt(document.getElementById('gc-start').value) || 0;
+  const total = cols * rows;
+
+  const tileW = Math.floor(gcImage.naturalWidth / cols);
+  const tileH = Math.floor(gcImage.naturalHeight / rows);
+
+  gcSetStatus(`Cropping ${total} tiles (${tileW}×${tileH}px each)…`);
+  gcTiles = [];
+
+  const canvas = document.getElementById('gc-canvas');
+  canvas.width = tileW;
+  canvas.height = tileH;
+  const ctx = canvas.getContext('2d');
+
+  const thumbsEl = document.getElementById('gc-thumbs');
+  thumbsEl.innerHTML = '';
+  // Update grid columns to match
+  thumbsEl.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c;
+      const num = startNum + idx;
+      const filename = String(num).padStart(4, '0') + '.png';
+
+      ctx.clearRect(0, 0, tileW, tileH);
+      ctx.drawImage(gcImage, c * tileW, r * tileH, tileW, tileH, 0, 0, tileW, tileH);
+
+      const dataUrl = canvas.toDataURL('image/png');
+      const blob = await (await fetch(dataUrl)).blob();
+
+      gcTiles.push({ blob, filename, dataUrl });
+
+      // Build thumbnail
+      const thumb = document.createElement('div');
+      thumb.className = 'gc-thumb';
+      thumb.innerHTML = `<img src="${dataUrl}" alt="${filename}"><div class="gc-thumb-label">${filename}</div>`;
+      thumbsEl.appendChild(thumb);
+    }
+    // Yield to UI every row
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  document.getElementById('gc-zip-btn').disabled = false;
+  document.getElementById('gc-upload-btn').disabled = false;
+  gcSetStatus(`${total} tiles ready — download ZIP or upload to app.`);
+}
+
+async function gcDownloadZip() {
+  if (!gcTiles.length) return;
+  gcSetStatus('Building ZIP…');
+  const zip = new JSZip();
+  for (const tile of gcTiles) {
+    zip.file(tile.filename, tile.blob);
+  }
+  const content = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(content);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `punk-dewds-batch-${document.getElementById('gc-start').value}.zip`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  gcSetStatus('ZIP downloaded.');
+}
+
+async function gcUploadAll() {
+  if (!gcTiles.length || !adminOn) return;
+  const btn = document.getElementById('gc-upload-btn');
+  btn.disabled = true;
+  btn.textContent = 'Uploading…';
+  let ok = 0, fail = 0;
+
+  for (const tile of gcTiles) {
+    try {
+      gcSetStatus(`Uploading ${tile.filename}… (${ok + fail + 1}/${gcTiles.length})`);
+      const fd = new FormData();
+      fd.append('file', new File([tile.blob], tile.filename, { type: 'image/png' }));
+      const r = await fetch('/api/feed/upload', { method: 'POST', credentials: 'include', body: fd });
+      if (r.ok) ok++; else fail++;
+    } catch {
+      fail++;
+    }
+  }
+
+  btn.textContent = 'Upload All to App';
+  btn.disabled = false;
+  gcSetStatus(`Done — ${ok} uploaded, ${fail} failed.`);
+  if (ok > 0) toast(`${ok} tiles uploaded`, true);
+}
+
+function gcSetStatus(msg) {
+  const el = document.getElementById('gc-status');
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+// Re-draw overlay when cols/rows change
+document.getElementById('gc-cols').addEventListener('change', gcDrawOverlay);
+document.getElementById('gc-rows').addEventListener('change', gcDrawOverlay);
 
 // ═══════════════════════════════════════════════════════
 // BOOT
